@@ -8,10 +8,16 @@
     <subtitle>前端学习 Blog</subtitle>
     <icon>https://start-stick.github.io/img/favicon.ico</icon>
     <entry>
-        <title type="html"><![CDATA[遗留问题_oss无法同步删除图片]]></title>
-        <id>https://start-stick.github.io/blog/遗留问题_oss无法同步删除图片</id>
-        <link href="https://start-stick.github.io/blog/遗留问题_oss无法同步删除图片"/>
+        <title type="html"><![CDATA[oss无法实现同步删除]]></title>
+        <id>https://start-stick.github.io/blog/oss-image-issu1</id>
+        <link href="https://start-stick.github.io/blog/oss-image-issu1"/>
         <updated>2024-12-14T04:36:38.000Z</updated>
+        <author>
+            <name>upupupupu</name>
+            <uri>https://github.com/Start-stick</uri>
+        </author>
+        <category label="issu" term="issu"/>
+        <category label="待解决" term="待解决"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>

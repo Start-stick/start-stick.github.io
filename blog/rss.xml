@@ -9,10 +9,12 @@
         <generator>https://github.com/jpmonette/feed</generator>
         <language>zh</language>
         <item>
-            <title><![CDATA[遗留问题_oss无法同步删除图片]]></title>
-            <link>https://start-stick.github.io/blog/遗留问题_oss无法同步删除图片</link>
-            <guid>https://start-stick.github.io/blog/遗留问题_oss无法同步删除图片</guid>
+            <title><![CDATA[oss无法实现同步删除]]></title>
+            <link>https://start-stick.github.io/blog/oss-image-issu1</link>
+            <guid>https://start-stick.github.io/blog/oss-image-issu1</guid>
             <pubDate>Sat, 14 Dec 2024 04:36:38 GMT</pubDate>
+            <category>issu</category>
+            <category>待解决</category>
         </item>
         <item>
             <title><![CDATA[Welcome]]></title>
