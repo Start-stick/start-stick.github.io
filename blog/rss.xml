@@ -4,10 +4,16 @@
         <title>前端学习 Blog</title>
         <link>https://start-stick.github.io/blog</link>
         <description>前端学习 Blog</description>
-        <lastBuildDate>Thu, 26 Aug 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 14 Dec 2024 07:56:54 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>zh</language>
+        <item>
+            <title><![CDATA[遗留问题_oss无法同步删除图片]]></title>
+            <link>https://start-stick.github.io/blog/遗留问题_oss无法同步删除图片</link>
+            <guid>https://start-stick.github.io/blog/遗留问题_oss无法同步删除图片</guid>
+            <pubDate>Sat, 14 Dec 2024 07:56:54 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[Welcome]]></title>
             <link>https://start-stick.github.io/blog/welcome</link>
