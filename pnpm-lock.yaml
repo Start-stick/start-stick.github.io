@@ -14,12 +14,18 @@ importers:
       '@lottiefiles/dotlottie-vue':
         specifier: ^0.5.6
         version: 0.5.6(vue@3.5.13(typescript@5.7.3))
+      '@tinymce/tinymce-vue':
+        specifier: ^6.1.0
+        version: 6.1.0(tinymce@7.7.0)(vue@3.5.13(typescript@5.7.3))
       element-plus:
         specifier: ^2.9.5
         version: 2.9.5(vue@3.5.13(typescript@5.7.3))
       pinia:
         specifier: ^3.0.1
         version: 3.0.1(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
+      tinymce:
+        specifier: ^7.7.0
+        version: 7.7.0
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.7.3)
@@ -680,6 +686,15 @@ packages:
 
   '@sxzz/popperjs-es@2.11.7':
     resolution: {integrity: sha512-Ccy0NlLkzr0Ex2FKvh2X+OyERHXJ88XJ1MXtsI9y9fGexlaXaVTPzBCRBwIxFkORuOb+uBqeu+RqnpgYTEZRUQ==}
+
+  '@tinymce/tinymce-vue@6.1.0':
+    resolution: {integrity: sha512-7JdaKMOaohuFWpjKwRmaZJbT/eNVUUYHG93R7+lUf7SUN+hSqd2spbuqZcki+tG9kaSAGd2ZmvJIsmzWDNAzpw==}
+    peerDependencies:
+      tinymce: ^7.0.0 || ^6.0.0 || ^5.5.1
+      vue: ^3.0.0
+    peerDependenciesMeta:
+      tinymce:
+        optional: true
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
@@ -1555,6 +1570,9 @@ packages:
     resolution: {integrity: sha512-qkf4trmKSIiMTs/E63cxH+ojC2unam7rJ0WrauAzpT3ECNTxGRMlaXxVbfxMUC/w0LaYk6jQ4y/nGR9uBO3tww==}
     engines: {node: '>=12.0.0'}
 
+  tinymce@7.7.0:
+    resolution: {integrity: sha512-zDFPXeje5fQIxuYzv9fE6YmjFBQmeB9SU+85ofizIHqCCkbBnDdEWhD5R8rBu9MwdjIQP3aNohgGe9D6JOhNaw==}
+
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -2279,6 +2297,12 @@ snapshots:
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@sxzz/popperjs-es@2.11.7': {}
+
+  '@tinymce/tinymce-vue@6.1.0(tinymce@7.7.0)(vue@3.5.13(typescript@5.7.3))':
+    dependencies:
+      vue: 3.5.13(typescript@5.7.3)
+    optionalDependencies:
+      tinymce: 7.7.0
 
   '@types/estree@1.0.6': {}
 
@@ -3241,6 +3265,8 @@ snapshots:
     dependencies:
       fdir: 6.4.3(picomatch@4.0.2)
       picomatch: 4.0.2
+
+  tinymce@7.7.0: {}
 
   to-regex-range@5.0.1:
     dependencies:

@@ -181,7 +181,15 @@ const handleCommand = (command) => {
                 </el-sub-menu>
                 <!-- 没有子菜单的情况 -->
                 <el-menu-item v-else :index="item.index">
-                  <el-icon><component :is="item.icon" /></el-icon>
+                  <div class="menu-icon-wrapper">
+                      <img 
+                        v-if="item.iconUrl" 
+                        :src="item.iconUrl" 
+                        class="custom-menu-icon"
+                        :class="{'is-active': activeMenu.startsWith(item.index)}"
+                      />
+                      <el-icon v-else><component :is="item.icon" /></el-icon>
+                    </div>
                   <template #title>{{ item.title }}</template>
                 </el-menu-item>
               </template>
@@ -213,7 +221,6 @@ const handleCommand = (command) => {
             </el-header>
             <el-main>
               <div class="course-container">
-                Main
                 <router-view></router-view>
               </div>
             </el-main>
@@ -341,6 +348,7 @@ const handleCommand = (command) => {
   flex-direction: column;
   height: 100%;
   background-color: #f5f7fa;
+  /* #f4f8ff */
   /* #f4f7ff */
 }
 
@@ -412,13 +420,6 @@ const handleCommand = (command) => {
         }
       }
     }
-    :deep(.el-dropdown-menu__item:hover){
-      color:red !important;
-    }
-    :deep(.el-dropdown-menu__item:not(.is-disabled):focus, .el-dropdown-menu__item:not(.is-disabled):hover){
-      color:red !important;
-    }
-
   }
 }
 
@@ -476,5 +477,12 @@ const handleCommand = (command) => {
 /* 确保图标在折叠状态下居中 */
 .el-menu--collapse .custom-menu-icon {
   margin: 0 auto;
+}
+</style>
+
+<style>
+.user .el-dropdown-menu__item:not(.is-disabled):focus, .el-dropdown-menu__item:not(.is-disabled):hover{
+  color:#627aff;
+  background-color: #f0f6ff;
 }
 </style>
