@@ -11,14 +11,16 @@ import {
   Calendar,
   Collection
 } from '@element-plus/icons-vue'
-
+import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 //定义变量 控制左侧菜单是否折叠
 const isCollapse = ref(false)
 // 添加鼠标悬停状态
 const isHovering = ref(false)
 // 当前选中菜单项
-const activeMenu = ref('2')
-
+const activeMenu = ref('/mycourse/outline')
+const router=useRouter()
+router.push('/mycourse/outline')
 // 添加课程信息数据
 const courseInfo = {
   name: '软件需求分析',
@@ -39,8 +41,8 @@ const menuItems = [
     iconUrl: new URL('@/assets/images/ai_icon.png', import.meta.url).href,
     title: 'Ai助教',
     children: [
-      { index: '1-1', title: '大纲助手' },
-      { index: '1-2', title: '教案助手' }
+      { index: '/mycourse/outline', title: '大纲助手' },
+      { index: '/mycourse/tachplan', title: '教案助手' }
     ]
   },
   {
@@ -68,8 +70,9 @@ const menuItems = [
   }
 ]
 
+
 // 当前选中的菜单标题
-const currentTitle = ref(menuItems[0].title)
+const currentTitle = ref('大纲助手')
 
 const handleSelect = (index) => {
   // 更新当前标题
@@ -104,7 +107,7 @@ const handleCommand = (command) => {
         <el-container class="layout-container">
             
         <el-aside 
-          :width="isCollapse?'64px':'200px'"
+          :width="isCollapse?'65px':'200px'"
           class="aside-transition"
         >
           <div class="toggle-header" >
@@ -128,7 +131,7 @@ const handleCommand = (command) => {
             </div>
           </div>
 
-          <div class="course-card" :class="{ 'collapsed': isCollapse }">
+          <!-- <div class="course-card" :class="{ 'collapsed': isCollapse }">
             <template v-if="!isCollapse">
               <el-image 
                 :src="courseInfo.image"
@@ -148,13 +151,14 @@ const handleCommand = (command) => {
                 class="course-icon"
               />
             </template>
-          </div>
+          </div> -->
             <el-menu
                 :default-active="activeMenu"
                 class="course-menu"
                 :collapse="isCollapse"
                 @select="handleSelect"
                 unique-opened
+                router
             >
               <template v-for="item in menuItems" :key="item.index">
                 <!-- 有子菜单的情况 -->
@@ -229,7 +233,7 @@ const handleCommand = (command) => {
     </div>
 </template>
 
-<style  scoped>
+<style lang="scss" scoped>
 /* 整体框架容器样式 */
 
 .el-main ,.el-header,el-container{
@@ -252,6 +256,7 @@ const handleCommand = (command) => {
   background-color: #fff;
   border-right: 1px solid #e6e6e6;
   transition: width 0.3s;
+  scroll:none;
 }
 
 /* 折叠按钮和Logo容器 */
