@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watchEffect, nextTick } from 'vue'
+import { ref, computed, watchEffect, nextTick, watch, onMounted, } from 'vue'
 import Editor from "@/components/Editor.vue"
 import { ElMessage } from 'element-plus'
 import { Download } from '@element-plus/icons-vue'
@@ -156,19 +156,23 @@ watchEffect(() => {
   }
 })
 // 监听编辑器内容变化，自动滚动到底部
-watchEffect(() => {
-  if (editorContent.value && messagesStore.isGenerating) {
-    nextTick(() => {
-      const container = document.querySelector('.form-section')
-      if (container) {
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: 'smooth'
-        })
-      }
-    })
-  }
-})
+// watchEffect(() => {
+  // if ( messagesStore.isGenerating) {
+  //   nextTick(() => {
+  //     const container = document.querySelector('.form-section')
+  //     if (container) {
+  //       container.scrollTo({
+  //         top: container.scrollHeight,
+  //         behavior: 'smooth'
+  //       })
+  //     }
+  //   })
+  // }
+// })
+
+//要滚动的对象
+const container = ref(null)
+
 // 导出Word文档
 const exportWord = () => {
   if (!editorContent.value) {
@@ -224,7 +228,7 @@ const handleInsertFromChat = (content) => {
     </div>
 
     <!-- 右侧表单区域 -->
-    <div class="form-section">
+    <div class="form-section" ref="container">
       <el-form :model="formData" label-position="top" class="generate-form">
         <el-form-item label="课程名称">
           <el-input v-model="formData.courseName" placeholder="请输入课程名称" />
@@ -278,12 +282,16 @@ const handleInsertFromChat = (content) => {
           </el-button> -->
         </div>
       </el-form>
-      <ChatDialog 
+      <div class="chat-dialog">
+        <ChatDialog 
         v-for="(item,index) in messagesStore.ask"
         :key="item"
         :index="index"
+        :container="container"
         @insert-to-doc="handleInsertFromChat"
       ></ChatDialog>
+      </div>
+      
       <el-backtop :visibility-height="50" :target="'.form-section'"  :right="38" :bottom="64" />
     </div>
   </div>

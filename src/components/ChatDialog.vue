@@ -18,6 +18,9 @@ const props=defineProps({
     index:{
         required:true
     },
+    container:{
+        required:true
+    }
 })
 const emit = defineEmits(['insert-to-doc'])
 // 控制器
@@ -110,10 +113,10 @@ const connectToSSE = () => {
       messagesStore.setAnswer({text:mdContentToHtml.value, index:messagesStore.answer.length-1})
       // 实时滚动到底部
       await nextTick(() => {
-            const container = document.querySelector('.form-section')
-            if (container) {
-              container.scrollTo({
-                top: container.scrollHeight,
+            // const container = document.querySelector('.form-section')
+            if (props.container) {
+              props.container.scrollTo({
+                top: props.container.scrollHeight,
                 behavior: 'smooth'
               })
             }
@@ -139,19 +142,19 @@ const connectToSSE = () => {
   })
 }
 // 监听编辑器内容变化，自动滚动到底部
-watchEffect(() => {
-  if (content.value && messagesStore.isGenerating) {
-    nextTick(() => {
-      const container = document.querySelector('.form-section')
-      if (container) {
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: 'smooth'
-        })
-      }
-    })
-  }
-})
+// watchEffect(() => {
+//   if (content.value && messagesStore.isGenerating) {
+//     nextTick(() => {
+//       const container = document.querySelector('.form-section')
+//       if (container) {
+//         container.scrollTo({
+//           top: container.scrollHeight,
+//           behavior: 'smooth'
+//         })
+//       }
+//     })
+//   }
+// })
 
 watchEffect(()=>{
     if(messagesStore.startGenerating&&props.index==messagesStore.ask.length-1){

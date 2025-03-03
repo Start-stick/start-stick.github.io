@@ -147,6 +147,7 @@ const handleCommand = (command) => {
               <img src="@/assets/qifeng.png" alt="logo">
             </div>
           </div>
+          <div class="line"></div>
 
           <!-- <div class="course-card" :class="{ 'collapsed': isCollapse }">
             <template v-if="!isCollapse">
@@ -283,9 +284,14 @@ const handleCommand = (command) => {
   align-items: center;
   padding: 0 16px;
   cursor: pointer;
-  border-bottom: 1px solid #e6e6e6;
+  // border-bottom: 1px solid #e6e6e6;
 }
-
+.line{
+  margin-left: 8px;
+  height:1px;
+  width: calc(100% - 16px);
+  background-color:#e6e6e6;
+}
 .logo {
   margin-left: 12px;
   height: 32px;
