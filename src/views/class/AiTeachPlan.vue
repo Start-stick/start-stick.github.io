@@ -4,9 +4,10 @@ import Editor from "@/components/Editor.vue"
 import { ElMessage } from 'element-plus'
 import { Download } from '@element-plus/icons-vue'
 import { marked } from 'marked'
+import { useMessagesStore } from '@/stores/messages'
 import handleExportWord from "xh-htmlword"
-import { getOutline } from '@/api/ai'
-import { fetchEventSource } from '@microsoft/fetch-event-source'
+// import { getOutline } from '@/api/ai'
+// import { fetchEventSource } from '@microsoft/fetch-event-source'
 
 // 编辑器内容
 const editorContent = ref('')
@@ -25,9 +26,6 @@ const formData = ref({
   teachingType: ''     // 教学类型
 })
 
-// 生成状态
-const isGenerating = ref(false)
-
 // 计算编辑器高度
 const editorHeight = computed(() => {
   return 'calc(100vh - 92px)'
@@ -37,11 +35,17 @@ const editorHeight = computed(() => {
 const editorRef = ref(null)
 // 编辑器是否禁用
 const editorDisabled = ref(false)
+const ask=ref('生成教案')
+const messagesStore=useMessagesStore()
+console.log(messagesStore.answer.length);
 
 // 处理表单提交
 const handleSubmit = async () => {
-  try {
-    isGenerating.value = true
+  messagesStore.addAnswer()
+  messagesStore.addAsk()
+  // try {
+  
+
     editorDisabled.value = true // 禁用编辑器
     editorContent.value = '' // 清空内容
 
@@ -52,88 +56,94 @@ const handleSubmit = async () => {
                   课时：${formData.value.teachingTime}，
                   教学类型：${formData.value.teachingType}，
                   请帮我生成一份详细的教案`
+    ask.value=query
+    messagesStore.setAsk({text:ask.value,index:messagesStore.ask.length-1})
+    messagesStore.setStartGenerating(true)
+    console.log(messagesStore.ask[messagesStore.ask.length-1]);
+    console.log(messagesStore.startGenerating);
+    editorDisabled.value=false
 
-    // SSE调用
-    const connectToSSE = () => {
-      isGenerating.value = true
-      const streamUrl = `https://open.bigmodel.cn/api/llm-application/open/v3/application/invoke`
-      const apiKey = '49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
+  //   // SSE调用
+  //   const connectToSSE = () => {
+  //     isGenerating.value = true
+  //     const streamUrl = `https://open.bigmodel.cn/api/llm-application/open/v3/application/invoke`
+  //     const apiKey = '49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
 
-      const app_id = '1895304167887695872'
-      const headers = {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      }
+  //     const app_id = '1895304167887695872'
+  //     const headers = {
+  //       'Authorization': `Bearer ${apiKey}`,
+  //       'Content-Type': 'application/json',
+  //     }
       
-      fetchEventSource(streamUrl, {
-        method: 'post',
-        headers,
-        body: JSON.stringify({
-          app_id,
-          messages: [{
-            role: 'user',
-            content: [{
-              value: query,
-              type: "input"
-            }],
-          }]
-        }),
-        onmessage: async (event) => {
-          const ev = ref(JSON.parse(event.data))
-          editorContent.value += ev.value.choices[0].delta.content.msg
+  //     fetchEventSource(streamUrl, {
+  //       method: 'post',
+  //       headers,
+  //       body: JSON.stringify({
+  //         app_id,
+  //         messages: [{
+  //           role: 'user',
+  //           content: [{
+  //             value: query,
+  //             type: "input"
+  //           }],
+  //         }]
+  //       }),
+  //       onmessage: async (event) => {
+  //         const ev = ref(JSON.parse(event.data))
+  //         editorContent.value += ev.value.choices[0].delta.content.msg
           
-          // 实时滚动到底部
-          await nextTick(() => {
-            const editorContainer = document.querySelector('.w-e-scroll')
-            if (editorContainer) {
-              editorContainer.scrollTo({
-                top: editorContainer.scrollHeight,
-                behavior: 'smooth'
-              })
-            }
-          })
-        },
-        onerror(err) {
-          console.log('err', err)
-          ElMessage.error('生成失败')
-          editorDisabled.value = false
-        },
-        async onopen(response) {
-          if (response.ok) {
-            console.log('开始建立连接')
-            isGenerating.value = true
-          }
-        },
-        onclose() {
-          isGenerating.value = false
-          editorDisabled.value = false // 启用编辑器
-          console.log('关闭')
-          ElMessage.success('生成成功')
-        },
-      }).catch((err) => {
-        controller?.abort()
-        setController(new AbortController())
-        console.log({ err })
-        ElMessage.error('生成失败')
-        editorDisabled.value = false
-        throw new Error(err)
-      })
-    }
+  //         // 实时滚动到底部
+  //         await nextTick(() => {
+  //           const editorContainer = document.querySelector('.w-e-scroll')
+  //           if (editorContainer) {
+  //             editorContainer.scrollTo({
+  //               top: editorContainer.scrollHeight,
+  //               behavior: 'smooth'
+  //             })
+  //           }
+  //         })
+  //       },
+  //       onerror(err) {
+  //         console.log('err', err)
+  //         ElMessage.error('生成失败')
+  //         editorDisabled.value = false
+  //       },
+  //       async onopen(response) {
+  //         if (response.ok) {
+  //           console.log('开始建立连接')
+  //           isGenerating.value = true
+  //         }
+  //       },
+  //       onclose() {
+  //         isGenerating.value = false
+  //         editorDisabled.value = false // 启用编辑器
+  //         console.log('关闭')
+  //         ElMessage.success('生成成功')
+  //       },
+  //     }).catch((err) => {
+  //       controller?.abort()
+  //       setController(new AbortController())
+  //       console.log({ err })
+  //       ElMessage.error('生成失败')
+  //       editorDisabled.value = false
+  //       throw new Error(err)
+  //     })
+  //   }
     
-    connectToSSE()
+  //   connectToSSE()
     
-  } catch (error) {
-    console.error('Submit Error:', error)
-    ElMessage.error('生成失败')
-  } finally {
-    isGenerating.value = false
-    editorDisabled.value = false
-  }
+  // } catch (error) {
+  //   console.error('Submit Error:', error)
+  //   ElMessage.error('生成失败')
+  // } finally {
+  //   isGenerating.value = false
+  //   editorDisabled.value = false
+  // }
 }
 
 // 监听编辑器内容变化，自动滚动到底部
 watchEffect(() => {
-  if (editorContent.value && isGenerating.value) {
+  if (editorContent.value && messagesStore.isGenerating) {
     nextTick(() => {
       const editorContainer = document.querySelector('.w-e-scroll')
       if (editorContainer) {
@@ -145,7 +155,20 @@ watchEffect(() => {
     })
   }
 })
-
+// 监听编辑器内容变化，自动滚动到底部
+watchEffect(() => {
+  if (editorContent.value && messagesStore.isGenerating) {
+    nextTick(() => {
+      const container = document.querySelector('.form-section')
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        })
+      }
+    })
+  }
+})
 // 导出Word文档
 const exportWord = () => {
   if (!editorContent.value) {
@@ -169,6 +192,11 @@ const exportWord = () => {
 const regenerate = () => {
   editorContent.value = ''
   handleSubmit()
+}
+
+// 处理从 ChatDialog 插入内容
+const handleInsertFromChat = (content) => {
+  editorContent.value = content
 }
 </script>
 
@@ -208,10 +236,10 @@ const regenerate = () => {
 
         <el-form-item label="年级">
           <el-select v-model="formData.grade" placeholder="请选择年级" class="w-full">
-            <el-option label="大一" value="grade1" />
-            <el-option label="大二" value="grade2" />
-            <el-option label="大三" value="grade3" />
-            <el-option label="大四" value="grade4" />
+            <el-option label="大一" value="大学一年级" />
+            <el-option label="大二" value="大学二年级" />
+            <el-option label="大三" value="大学三年级" />
+            <el-option label="大四" value="大学四年级" />
           </el-select>
         </el-form-item>
 
@@ -232,19 +260,40 @@ const regenerate = () => {
         </el-form-item>
 
         <div class="form-actions">
-          <el-button type="primary" :loading="isGenerating" @click="handleSubmit" class="submit-btn" style="background-color: #4a6efa">
+          <el-button 
+          type="primary" 
+          :loading="messagesStore.isGenerating" 
+          @click="handleSubmit" 
+          class="submit-btn" 
+          style="background-color: #4a6efa"
+        >
+          {{ messagesStore.isGenerating ? '生成中...' : '智能生成教案' }}
+          </el-button>
+          <!-- 111 -->
+          <!-- <el-button type="primary" :loading="isGenerating" @click="handleSubmit" class="submit-btn" style="background-color: #4a6efa">
             {{ isGenerating ? '生成中...' : '开始生成' }}
           </el-button>
           <el-button v-if="editorContent" @click="regenerate" :disabled="isGenerating">
             重新生成
-          </el-button>
+          </el-button> -->
         </div>
       </el-form>
+      <ChatDialog 
+        v-for="(item,index) in messagesStore.ask"
+        :key="item"
+        :index="index"
+        @insert-to-doc="handleInsertFromChat"
+      ></ChatDialog>
+      <el-backtop :visibility-height="50" :target="'.form-section'"  :right="38" :bottom="64" />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+//表单项
+.form-item{
+  margin-bottom: 10px;
+}
 // ai感背景图
 .form-section[data-v-39803236]{
   border: 1px solid #4770dc;

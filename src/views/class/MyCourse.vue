@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import {
   Document,
   Menu as IconMenu,
@@ -12,15 +12,19 @@ import {
   Collection
 } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 //定义变量 控制左侧菜单是否折叠
 const isCollapse = ref(false)
 // 添加鼠标悬停状态
 const isHovering = ref(false)
 // 当前选中菜单项
-const activeMenu = ref('/mycourse/outline')
-const router=useRouter()
-router.push('/mycourse/outline')
+const route=useRoute()
+const activeMenu = ref(route.path)
+// const activeMenu = ref('/mycourse/outline')
+// const router=useRouter()
+// router.push('/mycourse/outline')
+
+
 // 添加课程信息数据
 const courseInfo = {
   name: '软件需求分析',
@@ -42,7 +46,11 @@ const menuItems = [
     title: 'Ai助教',
     children: [
       { index: '/mycourse/outline', title: '大纲助手' },
-      { index: '/mycourse/tachplan', title: '教案助手' }
+      { index: '/mycourse/tachplan', title: '教案助手' },
+      { index: '/mycourse/resource', title: '资源助手' },
+      { index: '/mycourse/question', title: '习题通' },
+      { index: '/mycourse/learntrack', title: '学情看板' },
+      { index: '/mycourse/onetap', title: '一键通' },
     ]
   },
   {
@@ -57,7 +65,7 @@ const menuItems = [
   {
     index: '3',
     icon: Calendar,
-    title: '教学日历'
+    title: '历史记录'
   },
   {
     index: '4',
@@ -69,10 +77,19 @@ const menuItems = [
     ]
   }
 ]
+const firstTitle=()=>{
+  for(let item of menuItems){
+    if(item.index===route.path) return item.title
+    if(item.children){
+      for(let child of item.children){
+        if(child.index===route.path) return child.title
+      }
+    }
+  }
 
-
+}
 // 当前选中的菜单标题
-const currentTitle = ref('大纲助手')
+const currentTitle = ref('')
 
 const handleSelect = (index) => {
   // 更新当前标题
@@ -202,7 +219,7 @@ const handleCommand = (command) => {
           <el-container class="main-container">
             <el-header height="52px">
               <div class="title-user">
-                <div class="title">{{ currentTitle }}</div>
+                <div class="title">{{ currentTitle||firstTitle() }}</div>
                 <div class="user">
                   <el-dropdown @command="handleCommand" trigger="click">
                     <div class="user-info">
