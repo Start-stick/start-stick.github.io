@@ -255,7 +255,9 @@ const regenerate = () => {
   border: 1px solid #4770dc;
   box-sizing: border-box;
   border-radius: 8px;
-  background-image: url('@/assets/mainBg.png');
+  background: url('@/assets/mainBg.png') no-repeat ;
+  
+  // background-color: #f5f7fa;
 }
 
 .outline-container {

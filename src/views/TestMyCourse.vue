@@ -11,7 +11,9 @@ import {
   Calendar,
   Collection,
   User,
-  SwitchButton
+  SwitchButton,
+  Bell,
+  QuestionFilled
 } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -241,39 +243,59 @@ const handleCommand = (command) => {
             </el-menu>
         </el-aside>
           <el-container class="main-container">
-            <el-header height="52px">
-              <div class="title-user">
-                <div class="title">{{ currentTitle||firstTitle() }}</div>
-                <div class="user">
-                  <el-dropdown @command="handleCommand" trigger="click">
-                    <div class="user-info">
-                      <el-avatar :size="32" :src="userInfo.avatar" />
-                      <div class="user-detail">
-                        <span class="username">{{ userInfo.name }}</span>
-                        <span class="role-tag">{{ userInfo.role }}</span>
-                        <i class="arrow-icon"></i>
-                      </div>
+            <el-header height="52px" class="main-header">
+              <div class="header-wrapper">
+                <div class="title-user">
+                  <div class="title">
+                    <span class="page-title">{{ currentTitle||firstTitle() }}</span>
+                    <el-tag size="small" effect="plain" class="course-tag">
+                      {{ courseInfo.name }}
+                    </el-tag>
+                  </div>
+                  <div class="header-right">
+                    <div class="header-actions">
+                      <el-tooltip content="消息通知" placement="bottom">
+                        <el-badge :value="3" class="notice-badge">
+                          <el-icon class="header-icon"><Bell /></el-icon>
+                        </el-badge>
+                      </el-tooltip>
+                      <el-tooltip content="帮助中心" placement="bottom">
+                        <el-icon class="header-icon"><QuestionFilled /></el-icon>
+                      </el-tooltip>
                     </div>
-                    <template #dropdown>
-                      <el-dropdown-menu>
-                        <el-dropdown-item command="profile">
-                          <el-icon><User /></el-icon>
-                          个人中心
-                        </el-dropdown-item>
-                        <el-dropdown-item command="settings">
-                          <el-icon><Setting /></el-icon>
-                          系统设置
-                        </el-dropdown-item>
-                        <el-dropdown-item divided command="logout">
-                          <el-icon><SwitchButton /></el-icon>
-                          退出登录
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
+                    <div class="divider"></div>
+                    <div class="user">
+                      <el-dropdown @command="handleCommand" trigger="click">
+                        <div class="user-info">
+                          <el-avatar :size="32" :src="userInfo.avatar" />
+                          <div class="user-detail">
+                            <span class="username">{{ userInfo.name }}</span>
+                            <span class="role-tag">{{ userInfo.role }}</span>
+                            <i class="arrow-icon"></i>
+                          </div>
+                        </div>
+                        <template #dropdown>
+                          <el-dropdown-menu>
+                            <el-dropdown-item command="profile">
+                              <el-icon><User /></el-icon>
+                              个人中心
+                            </el-dropdown-item>
+                            <el-dropdown-item command="settings">
+                              <el-icon><Setting /></el-icon>
+                              系统设置
+                            </el-dropdown-item>
+                            <el-dropdown-item divided command="logout">
+                              <el-icon><SwitchButton /></el-icon>
+                              退出登录
+                            </el-dropdown-item>
+                          </el-dropdown-menu>
+                        </template>
+                      </el-dropdown>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="line"></div>
+              <div class="header-divider"></div>
             </el-header>
             <el-main>
               <div class="course-container">
@@ -555,6 +577,156 @@ const handleCommand = (command) => {
 /* 确保图标在折叠状态下居中 */
 .el-menu--collapse .custom-menu-icon {
   margin: 0 auto;
+}
+
+.main-header {
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
+  padding: 0;
+}
+
+.header-wrapper {
+  height: 100%;
+  padding: 0 20px;
+}
+
+.title-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .page-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #303133;
+    }
+
+    .course-tag {
+      background-color: #f0f6ff;
+      border-color: #d9e5ff;
+      color: #627aff;
+      font-weight: normal;
+      height: 24px;
+      line-height: 22px;
+      
+      &:hover {
+        background-color: #e6eeff;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .header-icon {
+      font-size: 20px;
+      color: #606266;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: #409EFF;
+        transform: translateY(-1px);
+      }
+    }
+
+    .notice-badge {
+      :deep(.el-badge__content) {
+        background-color: #ff4d4f;
+      }
+    }
+  }
+
+  .divider {
+    width: 1px;
+    height: 24px;
+    background-color: #e4e7ed;
+  }
+}
+
+.header-divider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    rgba(228, 231, 237, 0) 0%,
+    rgba(228, 231, 237, 0.8) 50%,
+    rgba(228, 231, 237, 0) 100%
+  );
+}
+
+/* 用户信息部分样式优化 */
+.user {
+  .user-info {
+    background-color: transparent;
+    
+    &:hover {
+      background-color: #f5f7fa;
+    }
+
+    .el-avatar {
+      transition: transform 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    .user-detail {
+      .role-tag {
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #e6eeff;
+        }
+      }
+    }
+  }
+}
+
+/* 下拉菜单样式优化 */
+:deep(.el-dropdown-menu) {
+  padding: 4px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  .el-dropdown-menu__item {
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    
+    .el-icon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    &:hover {
+      background-color: #f0f6ff;
+      color: #627aff;
+      transform: translateX(2px);
+    }
+    
+    &.is-disabled {
+      opacity: 0.6;
+    }
+  }
 }
 </style>
 
