@@ -1,27 +1,73 @@
 <script setup>
+import { ref } from 'vue'
 // import EchartsLine from '@/components/echarts/echartsLine.vue'
 import EchartsBar from '@/components/echarts/EchartsBar.vue'
 import EchartsPie from '@/components/echarts/EchartsPie.vue'
 import EchartsRadar from '@/components/echarts/EchartsRadar.vue'
-import { DataAnalysis, Collection, Reading } from '@element-plus/icons-vue'
-const title=[
-    {name:'在线学习行为追踪',
-    child:[
-        '学习时长与专注度',
-        '学习进度与知识点掌握情况',
-        '学习资源使用情况',
-        '学习行为分析'
-    ]},
-    {name:'学业表现分析',
-    child:[
-        '作业与测试成绩-折线图',
-        '知识点掌握图谱-知识点热力图'
-    ]},
-    {name:'学习习惯与时间管理',
-    child:[
-        '学习时段分布-折线图',
-        '任务完成效率-饼图'
-    ]},
+import { DataAnalysis, Collection, Reading, Refresh } from '@element-plus/icons-vue'
+
+// 定义标题数据
+const title = [
+  {
+    name: '在线学习行为追踪',
+    icon: 'Track',
+    child: [
+      '学习时长与专注度',
+      '学习进度与知识点掌握情况',
+      '学习资源使用情况',
+      '学习行为分析'
+    ]
+  },
+  {
+    name: '学业表现分析',
+    icon: 'Analysis',
+    child: [
+      '作业与测试成绩-折线图',
+      '知识点掌握图谱-知识点热力图'
+    ]
+  },
+  {
+    name: '学习习惯与时间管理',
+    icon: 'Time',
+    child: [
+      '学习时段分布-折线图',
+      '任务完成效率-饼图'
+    ]
+  }
+]
+
+// 刷新数据
+const isRefreshing = ref(false)
+const handleRefresh = () => {
+  isRefreshing.value = true
+  // 模拟刷新数据
+  setTimeout(() => {
+    isRefreshing.value = false
+    ElMessage.success('数据已更新')
+  }, 1000)
+}
+
+// 时间范围选择
+const dateRange = ref('')
+const shortcuts = [
+  {
+    text: '最近一周',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+      return [start, end]
+    },
+  },
+  {
+    text: '最近一月',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+      return [start, end]
+    },
+  }
 ]
 
 //规定可视化模块的宽高
@@ -31,6 +77,34 @@ const chartHeight = '200px';
 
 <template>
     <div class="learn-tracker">
+        <!-- 顶部操作栏 -->
+        <div class="tracker-header">
+            <div class="header-left">
+                <h2 class="main-title">学情看板</h2>
+                <el-tag type="info" effect="light" style="padding: 4px;" >实时数据</el-tag>
+            </div>
+            <div class="header-right">
+                <el-date-picker
+                    v-model="dateRange"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :shortcuts="shortcuts"
+                    size="small"
+                />
+                <el-button 
+                    type="primary" 
+                    :icon="Refresh"
+                    :loading="isRefreshing"
+                    @click="handleRefresh"
+                    size="small"
+                >
+                    刷新数据
+                </el-button>
+            </div>
+        </div>
+
         <div class="learn-status">
             <div class="learn-status-main">
                 <h3 class="title">学情分析</h3>
@@ -235,41 +309,15 @@ li{
     flex-direction: column;
     width: 100%;
     min-width: 1040px;
-    gap: 30px;
-}
-.learn-status{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
-    gap: 30px;
-    width: 100%;
-    margin-bottom: 14px;
-    .learn-status-main{
-        flex: 3;
-        display: grid;
-        border-radius: 10px;
-        height: 100%;
-        gap: 14px;
-
-    }
-    .learn-status-aside{
-        flex: 2;
-        display: grid;
-        border-radius: 10px;
-        height: 100%;
-        gap: 14px;
-    }
-    
-
-    
+    gap: 20px;
+    padding: 20px;
 }
 
 .learn-summary{
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
     .summary-container {
         display: grid;
@@ -363,4 +411,95 @@ li{
         }
     }
 }
+
+
+//以下是优化内容
+.tracker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .main-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #303133;
+            margin: 0;
+        }
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+}
+
+
+.learn-status {
+    display: flex;
+    gap: 20px;
+    
+    .learn-status-main {
+        flex: 3;
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+        .title {
+            margin-bottom: 20px;
+        }
+
+        .status-list {
+            gap: 20px;
+            
+            .item {
+                background: #f8f9fa;
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    // transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+            }
+        }
+    }
+
+    .learn-status-aside {
+        flex: 2;
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+        .title{
+            margin-bottom: 20px;
+        }
+
+        .ai-list {
+            gap: 20px;
+            
+            .ai-item {
+                background: #f8f9fa;
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    transform: translateY(-2px);
+                    // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+            }
+        }
+    }
+}
+
+
 </style>
