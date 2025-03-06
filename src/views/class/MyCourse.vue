@@ -296,8 +296,6 @@ const handleCommand = (command) => {
 .toggle-icon {
   font-size: 20px;
   color: #666;
-
-  padding: 8px;
   border-radius: 50%;
   transition: all 0.2s;
 }

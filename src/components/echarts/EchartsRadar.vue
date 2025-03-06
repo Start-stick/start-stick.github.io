@@ -46,7 +46,6 @@ onMounted(() => {
   window.addEventListener('resize', () => {
     chart.resize()
   })
-  
   chart.setOption({
     title : {
         text: '知识点掌握情况',

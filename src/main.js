@@ -1,4 +1,5 @@
 import '@/assets/main.scss'
+import '@/style/base.css'
 import 'element-plus/theme-chalk/el-message.css'
 
 import { createApp } from 'vue'
