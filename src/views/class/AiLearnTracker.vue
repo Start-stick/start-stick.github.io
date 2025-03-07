@@ -330,67 +330,50 @@ window.addEventListener('resize', () => {
                 <!-- 情况分析 -->
                 <div class="summary-item analysis">
                     <div class="item-header">
-                        <h4>情况分析</h4>
-                        <el-icon><DataAnalysis /></el-icon>
+                    <h4>学情分析</h4>
+                    <el-icon><DataAnalysis /></el-icon>
                     </div>
                     <div class="item-content">
-                        <p>1. 学习进度：目前已完成80%的课程内容，整体进度良好。</p>
-                        <p>2. 知识掌握：在函数和数组操作方面表现优秀，但指针和内存管理需要加强。</p>
-                        <p>3. 学习习惯：每周学习时长稳定，但晚间学习效率有待提高。</p>
+                    <p v-for="(item, index) in aiSummary.analysis.content" 
+                        :key="index">
+                        {{ index + 1 }}. {{ item.text }}
+                    </p>
                     </div>
                 </div>
 
                 <!-- 资源推荐 -->
                 <div class="summary-item resource">
                     <div class="item-header">
-                        <h4>资源推荐</h4>
-                        <el-icon><Collection /></el-icon>
+                    <h4>资源推荐</h4>
+                    <el-icon><Collection /></el-icon>
                     </div>
                     <div class="item-content">
-                        <ul class="resource-list">
-                            <li>
-                                <span class="resource-type">视频</span>
-                                <span class="resource-name">指针与内存管理精讲</span>
-                                <el-button type="primary" link>查看</el-button>
-                            </li>
-                            <li>
-                                <span class="resource-type">文档</span>
-                                <span class="resource-name">C语言内存管理最佳实践</span>
-                                <el-button type="primary" link>查看</el-button>
-                            </li>
-                            <li>
-                                <span class="resource-type">实验</span>
-                                <span class="resource-name">指针操作实战演练</span>
-                                <el-button type="primary" link>查看</el-button>
-                            </li>
-                        </ul>
+                    <ul class="resource-list">
+                        <li v-for="resource in aiSummary.resources.list" :key="resource.name">
+                        <span class="resource-type">{{ resource.type }}</span>
+                        <span class="resource-name">{{ resource.name }}</span>
+                        <el-button type="primary" link>查看</el-button>
+                        </li>
+                    </ul>
                     </div>
                 </div>
 
                 <!-- 题目推荐 -->
                 <div class="summary-item exercise">
                     <div class="item-header">
-                        <h4>题目推荐</h4>
-                        <el-icon><Reading /></el-icon>
+                    <h4>题目推荐</h4>
+                    <el-icon><Reading /></el-icon>
                     </div>
                     <div class="item-content">
-                        <ul class="exercise-list">
-                            <li>
-                                <span class="exercise-difficulty easy">简单</span>
-                                <span class="exercise-title">指针数组基础操作</span>
-                                <el-button type="primary" link>练习</el-button>
-                            </li>
-                            <li>
-                                <span class="exercise-difficulty medium">中等</span>
-                                <span class="exercise-title">动态内存分配应用</span>
-                                <el-button type="primary" link>练习</el-button>
-                            </li>
-                            <li>
-                                <span class="exercise-difficulty hard">困难</span>
-                                <span class="exercise-title">复杂数据结构内存管理</span>
-                                <el-button type="primary" link>练习</el-button>
-                            </li>
-                        </ul>
+                    <ul class="exercise-list">
+                        <li v-for="exercise in aiSummary.exercises.list" :key="exercise.title">
+                        <span :class="['exercise-difficulty', exercise.difficulty]">
+                            {{ exercise.difficultyText }}
+                        </span>
+                        <span class="exercise-title">{{ exercise.title }}</span>
+                        <el-button type="primary" link>练习</el-button>
+                        </li>
+                    </ul>
                     </div>
                 </div>
             </div>
