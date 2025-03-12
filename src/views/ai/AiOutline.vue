@@ -7,7 +7,6 @@ import { marked } from 'marked';
 import handleExportWord from "xh-htmlword";
 // import { getOutline } from '@/api/ai'
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import { getOutline, getOutlineNew, getResNew, getStream } from '@/api/ai';
 
 // 编辑器内容
 const editorContent = ref('')
@@ -45,16 +44,6 @@ const handleSubmit = async () => {
     // 这里添加调用后端API的逻辑
     const query=`课程名称：${formData.value.courseName}，教学目标：${formData.value.teachingGoal}，年级：${formData.value.grade}，学科：${formData.value.subject},请帮我生成相关的教学大纲`
     //同步调用
-    // const res = await getOutline(query)
-    // editorContent.value = res.data.choices[0].messages.content.msg
-    // ElMessage.success('生成成功')
-
-
-    // const res1=await getResNew()
-    // console.log(res1);
-    // const res=await getOutlineNew('给我《高数》的教学大纲')
-    // console.log(res);
-    getStream('给我《高数》的教学大纲')
     
     editorDisabled.value = true // 禁用编辑器
     editorContent.value = '' // 清空内容

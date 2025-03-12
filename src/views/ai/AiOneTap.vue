@@ -1,6 +1,6 @@
 <script setup>
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
-import { ref } from 'vue'
+import { ref ,nextTick} from 'vue'
 // import { getStream } from '@/api/ai'
 
 const handleClick = async () => {
@@ -22,6 +22,7 @@ const handleClick = async () => {
     let lastProcessedIndex = 0;
     let messageQueue = []; // 消息队列，用于存放待打字的消息
     let isTyping = false; // 标志，用于指示是否正在打字
+    let messageContent = ''; // 用于累积消息内容
 
     function processMessageContent(content) {
         let currentIndex = lastProcessedIndex;
@@ -38,12 +39,11 @@ const handleClick = async () => {
             let jsonEndIndex = dataString.indexOf('}', dataIndex) + 1;
 
             // 确保我们找到了完整的 JSON 对象
-            if (jsonEndIndex > 0 && dataString[jsonEndIndex - 1] === '}') {
+            if (jsonEndIndex > 9 && dataString[jsonEndIndex - 1] === '}') {
                 try {
                     // 尝试解析 JSON 对象
                     const dataObject = JSON.parse(dataString.substring(dataIndex + 5, jsonEndIndex));
                     // 使用打字机效果逐字添加消息
-                    // typeMessage(dataObject.content, true);
                     messageQueue.push(dataObject.content);
                     processQueue();
                 } catch (error) {
@@ -57,6 +57,13 @@ const handleClick = async () => {
                 // 如果没有找到完整的 JSON 对象，则停止处理
                 break;
             }
+        }
+        // 检测到 event:done，重置 messageContent
+        const eventDoneIndex = content.indexOf('event:done', lastProcessedIndex)
+        if (eventDoneIndex !== -1) {
+            messageContent = ''; // 重置内容
+            lastProcessedIndex = 0; // 重置处理位置
+            return; // 退出处理
         }
         lastProcessedIndex = currentIndex;
     }
@@ -126,7 +133,6 @@ const handleClick = async () => {
         const reader = response.body.getReader();
         console.log(reader);
 
-        let messageContent = ''; // 用于累积消息内容
         let decoder = new TextDecoder('utf-8');
 
         while (true) {
@@ -142,7 +148,16 @@ const handleClick = async () => {
 
             //   // 处理累积的消息内容
             processMessageContent(messageContent);
-            
+            // 实时滚动到底部
+            await nextTick(() => {
+                const container = document.querySelector('.chat')
+                if (container) {
+                    container.scrollTo({
+                        top: container.scrollHeight,
+                        behavior: 'smooth'
+                    })
+                }
+            })
         }
 
     } catch (error) {
@@ -157,12 +172,20 @@ const handleClick = async () => {
     <div>
         一键生成
         <button @click="handleClick">1111</button>
-        <div class="chatWindow">
+        <div class="chat">
 
+            <div class="chatWindow">
+
+            </div>
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
-
+.chat{
+    width: 400px;
+    height: calc(100vh - 120px);
+    border: 1px solid #000;
+    overflow-y: auto;
+}
 </style> 
