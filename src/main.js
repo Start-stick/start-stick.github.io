@@ -1,6 +1,6 @@
 import '@/assets/main.scss'
 import '@/style/base.css'
-import 'element-plus/theme-chalk/el-message.css'
+import '@/util/elemtntui.js'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

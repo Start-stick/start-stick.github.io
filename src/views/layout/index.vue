@@ -11,6 +11,7 @@ import {
   Calendar,
   Collection,
   User,
+  School,
   SwitchButton
 } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
@@ -45,16 +46,21 @@ const userInfo = {
 // 修改菜单数据，添加自定义图标
 const menuItems = [
   {
+    index: '/layout/myclass',// 对应路由路径
+    icon: School,  // 使用 School 图标
+    title: '班级',
+  },
+  {
     index: '1',
     iconUrl: new URL('@/assets/images/ai_icon.png', import.meta.url).href,
     title: 'Ai助教',
     children: [
-      { index: '/mycourse/outline', title: '大纲助手' },
-      { index: '/mycourse/tachplan', title: '教案助手' },
-      { index: '/mycourse/resource', title: '资源助手' },
-      { index: '/mycourse/question', title: '习题通' },
-      { index: '/mycourse/learntrack', title: '学情看板' },
-      { index: '/mycourse/onetap', title: '一键通' },
+      { index: '/layout/outline', title: '大纲助手' },
+      { index: '/layout/teachplan', title: '教案助手' },
+      { index: '/layout/resource', title: '资源助手' },
+      { index: '/layout/question', title: '习题通' },
+      { index: '/layout/learntrack', title: '学情看板' },
+      { index: '/layout/onetap', title: '一键通' },
     ]
   },
   {
@@ -371,6 +377,7 @@ const handleCommand = (command) => {
 
 /* 功能菜单样式 */
 .course-menu {
+  margin-top: 10px;
   border-right: none;
   
   :deep(.el-menu-item) {

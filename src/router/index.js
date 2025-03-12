@@ -1,20 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Layout from '@/views/layout/index.vue'
+import MyClass from '@/views/class/myclass.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {path: '/', redirect:'/mycourse'},
+    {path: '/', redirect:'/login'},
     {
-      path: '/mycourse',
-      component: () => import('@/views/class/MyCourse.vue'),
+      path: '/login',
+      component: () => import('@/views/login/LoginPage.vue')
+    },
+    {
+      path: '/layout',
+      component: Layout,
       children:[
-        { path: '/mycourse/outline', component: () => import('@/views/class/AiOutline.vue') },
-        { path: '/mycourse/tachplan', component: () => import('@/views/class/AiTeachPlan.vue') },
-        { path: '/mycourse/resource', component: () => import('@/views/class/AiResource.vue') },
-        { path: '/mycourse/question', component: () => import('@/views/class/AiQuestion.vue') },
-        { path: '/mycourse/learntrack', component: () => import('@/views/class/AiLearnTracker.vue') },
-        { path: '/mycourse/onetap', component: () => import('@/views/class/AiOneTap.vue') },
+        { path: '/layout/myclass', component: MyClass },
+        {path:'/layout/outline',component:()=>import('@/views/ai/AiOutline.vue')},
+        { path: '/layout/teachplan', component: () => import('@/views/ai/AiTeachPlan.vue') },
+        { path: '/layout/resource', component: () => import('@/views/ai/AiResource.vue') },
+        { path: '/layout/question', component: () => import('@/views/ai/AiQuestion.vue') },
+        { path: '/layout/learntrack', component: () => import('@/views/ai/AiLearnTracker.vue') },
+        { path: '/layout/onetap', component: () => import('@/views/ai/AiOneTap.vue') },
+        { path: '/layout/classdetail', component: () => import('@/views/class/ClassDetail.vue') },
       ]
-    }
+    },
+    { path: '/classbegin', component: () => import('@/views/class/ClassBegin.vue') },
   ],
 })
 

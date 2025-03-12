@@ -27,35 +27,35 @@ const emit = defineEmits(['insert-to-doc'])
 const controller = ref(null)
 
 // 更新光标位置
-const updateCursorPosition = async () => {
-  await nextTick(() => {
-    const textElement = textRef.value
-    const cursorElement = cursorRef.value
-    if (!textElement || !cursorElement) return
+// const updateCursorPosition = async () => {
+//   await nextTick(() => {
+//     const textElement = textRef.value
+//     const cursorElement = cursorRef.value
+//     if (!textElement || !cursorElement) return
 
-    const textContent = textElement.textContent || ''
-    const tempSpan = document.createElement('span')
-    tempSpan.style.visibility = 'hidden'
-    tempSpan.style.position = 'absolute'
-    tempSpan.style.whiteSpace = 'pre-wrap'
-    tempSpan.style.font = window.getComputedStyle(textElement).font
-    tempSpan.textContent = textContent
+//     const textContent = textElement.textContent || ''
+//     const tempSpan = document.createElement('span')
+//     tempSpan.style.visibility = 'hidden'
+//     tempSpan.style.position = 'absolute'
+//     tempSpan.style.whiteSpace = 'pre-wrap'
+//     tempSpan.style.font = window.getComputedStyle(textElement).font
+//     tempSpan.textContent = textContent
 
-    document.body.appendChild(tempSpan)
-    const textRect = textElement.getBoundingClientRect()
-    const spanRect = tempSpan.getBoundingClientRect()
-    document.body.removeChild(tempSpan)
+//     document.body.appendChild(tempSpan)
+//     const textRect = textElement.getBoundingClientRect()
+//     const spanRect = tempSpan.getBoundingClientRect()
+//     document.body.removeChild(tempSpan)
 
-    // 计算最后一个字符的位置
-    const lines = Math.floor(spanRect.height / parseInt(window.getComputedStyle(textElement).lineHeight))
-    const isLastLine = spanRect.width > textRect.width * (lines - 1)
+//     // 计算最后一个字符的位置
+//     const lines = Math.floor(spanRect.height / parseInt(window.getComputedStyle(textElement).lineHeight))
+//     const isLastLine = spanRect.width > textRect.width * (lines - 1)
     
-    cursorElement.style.left = isLastLine ? 
-      `${Math.min(spanRect.width % textRect.width, textRect.width)}px` : 
-      '0px'
-    cursorElement.style.top = `${lines * parseInt(window.getComputedStyle(textElement).lineHeight) - parseInt(window.getComputedStyle(textElement).lineHeight)}px`
-  })
-}
+//     cursorElement.style.left = isLastLine ? 
+//       `${Math.min(spanRect.width % textRect.width, textRect.width)}px` : 
+//       '0px'
+//     cursorElement.style.top = `${lines * parseInt(window.getComputedStyle(textElement).lineHeight) - parseInt(window.getComputedStyle(textElement).lineHeight)}px`
+//   })
+// }
 
 // 停止生成
 // const stopGenerate = () => {
@@ -82,10 +82,15 @@ const connectToSSE = () => {
   
   controller.value = new AbortController()
   const signal = controller.value.signal
+  //1
+  // const streamUrl = `https://open.bigmodel.cn/api/llm-application/open/v3/application/invoke`
+  // const apiKey = '49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
+  // const app_id = '1895304167887695872'
   
-  const streamUrl = `https://open.bigmodel.cn/api/llm-application/open/v3/application/invoke`
-  const apiKey = '49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
-  const app_id = '1895304167887695872'
+  //2
+  const streamUrl = `https://api.coze.cn/v3/chat`
+  const apiKey ='pat_DjueLDXeXdMtOmDd83u0svybLjPo05fEFhgkBZcCNFECUxWLgcpghQircY5vcOk'
+  const bot_id='7480200186401275939'
   
   fetchEventSource(streamUrl, {
     method: 'post',
@@ -95,19 +100,34 @@ const connectToSSE = () => {
     },
     signal,
     body: JSON.stringify({
-      app_id,
-      messages: [{
-        role: 'user',
-        content: [{
-          value: messagesStore.ask[props.index],
-          type: "input"
-        }],
-      }]
+      bot_id,
+      user_id:"123",
+      stream:true,
+      additional_messages:[
+        {
+          role:'user',
+          content:messagesStore.ask[props.index],
+          content_type:'text'
+
+        }
+
+      ]
+      // app_id,
+      // messages: [{
+      //   role: 'user',
+      //   content: [{
+      //     value: messagesStore.ask[props.index],
+      //     type: "input"
+      //   }],
+      // }]
     }),
+    
     onmessage: async (event) => {
+      console.log(event);
+      
       const ev = ref(JSON.parse(event.data))
       content.value += ev.value.choices[0].delta.content.msg
-      await updateCursorPosition()
+      // await updateCursorPosition()
 
     
       messagesStore.setAnswer({text:mdContentToHtml.value, index:messagesStore.answer.length-1})

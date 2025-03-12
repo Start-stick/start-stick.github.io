@@ -1,21 +1,27 @@
 import axios from 'axios'
 
-//自制智能体
-const app_id='1895304167887695872'
-const baseURL =`https://open.bigmodel.cn/api/llm-application/open`
 //deepSeek API
 // const baseURL = 'https://api.deepseek.com'
-const apiKey ='49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
+//自制智能体1
+// const app_id='1895304167887695872'
+// const baseURL =`https://open.bigmodel.cn/api/llm-application/open`
+// const apiKey ='49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
+//自制智能体2
+// const streamUrl = `https://api.coze.cn/v3/chate`
+const apiKey ='pat_DjueLDXeXdMtOmDd83u0svybLjPo05fEFhgkBZcCoNFECUxWLgcpghQircY5VCOk'
+const bot_id='7480200186401275939'
 
 //智能体
 const headers = {
     'Authorization': `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
 }
+// console.log(apiKey);
 
 const instance = axios.create({
-    baseURL,
-    apiKey,
+    // baseURL,
+    // streamUrl,
+    // apiKey,
     // timeout: 100000
     transformResponse: [function (data, headers) {
         // 如果是SSE响应，直接返回原始数据

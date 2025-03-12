@@ -55,7 +55,7 @@ const handleSubmit = async () => {
                   学科：${formData.value.subject}，
                   课时：${formData.value.teachingTime}，
                   教学类型：${formData.value.teachingType}，
-                  请帮我生成一份详细的教案`
+                  请帮我生成一份相关的练习题`
     ask.value=query
     messagesStore.setAsk({text:ask.value,index:messagesStore.ask.length-1})
     messagesStore.setStartGenerating(true)
@@ -303,7 +303,7 @@ const handleInsertFromChat = (content) => {
   margin-bottom: 10px;
 }
 // ai感背景图
-.form-section[data-v-39803236]{
+.form-section{
   border: 1px solid #4770dc;
   box-sizing: border-box;
   border-radius: 8px;
@@ -325,6 +325,7 @@ const handleInsertFromChat = (content) => {
   padding: 20px;
   overflow: hidden;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  border-radius: 8px;
 }
 
 .editor-header {
@@ -367,19 +368,20 @@ const handleInsertFromChat = (content) => {
   }
 }
 
+
 .form-section {
   flex: 1;
   padding: 20px;
   background-color: #f8f9fa;
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  border: 1px solid #e6e6e6;
+  border: 1px solid #4770dc;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
-  height: calc(100vh - 96px); /* 设置固定高度 */
+  background-image: url('@/assets/mainBg.png');
 
-  /* 自定义滚动条样式 */
+  // 自定义滚动条
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -397,9 +399,7 @@ const handleInsertFromChat = (content) => {
     background-color: #f5f7fa;
   }
 }
-
 .generate-form {
-  min-height: 100%; /* 改为最小高度 */
   display: flex;
   flex-direction: column;
 }

@@ -7,6 +7,7 @@ import { marked } from 'marked';
 import handleExportWord from "xh-htmlword";
 // import { getOutline } from '@/api/ai'
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { getOutline, getOutlineNew, getResNew, getStream } from '@/api/ai';
 
 // 编辑器内容
 const editorContent = ref('')
@@ -47,6 +48,13 @@ const handleSubmit = async () => {
     // const res = await getOutline(query)
     // editorContent.value = res.data.choices[0].messages.content.msg
     // ElMessage.success('生成成功')
+
+
+    // const res1=await getResNew()
+    // console.log(res1);
+    // const res=await getOutlineNew('给我《高数》的教学大纲')
+    // console.log(res);
+    getStream('给我《高数》的教学大纲')
     
     editorDisabled.value = true // 禁用编辑器
     editorContent.value = '' // 清空内容
@@ -251,7 +259,7 @@ const regenerate = () => {
 
 <style scoped lang="scss">
 // ai感背景图
-.form-section[data-v-8c507a66]{
+.form-section{
   border: 1px solid #4770dc;
   box-sizing: border-box;
   border-radius: 8px;
@@ -278,6 +286,7 @@ const regenerate = () => {
   padding: 20px;
   overflow: hidden; /* 防止编辑器溢出 */
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  border-radius: 8px;
 }
 
 .editor-header {
@@ -322,15 +331,33 @@ const regenerate = () => {
 
 .form-section {
   flex: 1;
-  // width: 320px;
   padding: 20px;
   background-color: #f8f9fa;
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* 表单内容过多时可滚动 */
-  border: 1px solid #e6e6e6;
+  overflow-y: auto;
+  border: 1px solid #4770dc;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  background-image: url('@/assets/mainBg.png');
+
+  // 自定义滚动条
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #dcdfe6;
+    border-radius: 3px;
+    
+    &:hover {
+      background-color: #c0c4cc;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #f5f7fa;
+  }
 }
 
 .generate-form {
