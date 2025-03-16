@@ -121,8 +121,8 @@ const handleClick = async () => {
                 additional_messages: [
                     {
                         role: 'user',
-                        content: '给我《高数》的教学大纲',
-                        content_type: 'text'
+                        content: '给我《高数》的ppt',
+                        content_type: 'file'
 
                     }
 

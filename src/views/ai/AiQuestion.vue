@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 
 // 弹框
-const dialogVisible = ref(true)
+const dialogVisible = ref(false)
 // 表单数据
 const formData = ref({
   subject: '',
@@ -265,8 +265,8 @@ const handleDelete = (item) => {
         }
     }
     .el-button {
-        padding: 12px 24px;
-        font-size: 18px;
+        padding: 8px 15px;
+        font-size: 16px;
         color: #fff;
         border-radius: 6px;
         background-color: #5e5bff;

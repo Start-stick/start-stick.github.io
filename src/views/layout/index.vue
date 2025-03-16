@@ -2,17 +2,20 @@
 import { ref, watch } from 'vue'
 import {
   Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
   Expand,
+  Setting,
   Fold,
   Reading,
-  Calendar,
-  Collection,
   User,
+  Memo,
   School,
-  SwitchButton
+  SwitchButton,
+  Edit,
+  Notebook,
+  Box,
+  DataAnalysis,
+  MagicStick,
+  Monitor
 } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -50,42 +53,49 @@ const menuItems = [
     icon: School,  // 使用 School 图标
     title: '班级',
   },
-  {
-    index: '1',
-    iconUrl: new URL('@/assets/images/ai_icon.png', import.meta.url).href,
-    title: 'Ai助教',
-    children: [
-      { index: '/layout/outline', title: '大纲助手' },
-      { index: '/layout/teachplan', title: '教案助手' },
-      { index: '/layout/resource', title: '资源助手' },
-      { index: '/layout/question', title: '习题通' },
-      { index: '/layout/learntrack', title: '学情看板' },
-      { index: '/layout/onetap', title: '一键通' },
-    ]
+  // {
+  //   index: '1',
+  //   iconUrl: new URL('@/assets/images/ai_icon.png', import.meta.url).href,
+  //   title: 'Ai助教',
+  //   children: [
+  //     { index: '/layout/outline', title: '大纲助手' },
+  //     { index: '/layout/teachplan', title: '教案助手' },
+  //     { index: '/layout/resource', title: '资源助手' },
+  //     { index: '/layout/question', title: '习题通' },
+  //     { index: '/layout/learntrack', title: '学情看板' },
+  //     { index: '/layout/onetap', title: '一键通' },
+  //   ]
+  // },
+  { 
+    index: '/layout/outline', 
+    icon: Notebook, // 使用 Notebook 图标表示大纲
+    title: '大纲助手' ,
   },
-  {
-    index: '2',
-    icon: Reading,
-    title: '教学大纲',
-    children: [
-      { index: '2-1', title: '教学目标' },
-      { index: '2-2', title: '考核方式' }
-    ]
+  { 
+    index: '/layout/teachplan', 
+    icon: Edit, // 使用 Edit 图标表示教案
+    title: '教案助手' 
   },
-  {
-    index: '3',
-    icon: Calendar,
-    title: '历史记录'
+  { 
+    index: '/layout/resource', 
+    icon: Box, // 使用 Box 图标表示资源
+    title: '资源助手' 
   },
-  {
-    index: '4',
-    icon: Collection,
-    title: '教学资源',
-    children: [
-      { index: '4-1', title: '课件资料' },
-      { index: '4-2', title: '实验资料' }
-    ]
-  }
+  { 
+    index: '/layout/question', 
+    icon: Document, // 使用 Document 图标表示习题
+    title: '习题通' 
+  },
+  { 
+    index: '/layout/learntrack', 
+    icon: DataAnalysis, // 使用 DataAnalysis 图标表示学情
+    title: '学情看板' 
+  },
+  { 
+    index: '/layout/onetap', 
+    icon: MagicStick, // 使用 Magic 图标表示一键通
+    title: '一键通' 
+  },
 ]
 const firstTitle=()=>{
   for(let item of menuItems){

@@ -1,6 +1,7 @@
 import '@/assets/main.scss'
 import '@/style/base.css'
-import '@/util/elemtntui.js'
+import '@/style/common.css'
+import '@/utils/elemtntui.js'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

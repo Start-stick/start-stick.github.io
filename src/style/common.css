@@ -1,0 +1,24 @@
+.button {
+    padding: 8px 15px;
+    font-size: 14px;
+    color: #fff;
+    border-radius: 6px;
+    background-color: #5e5bff;
+    border: none;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        box-shadow: 0 4px 12px rgba(78, 110, 242, 0.2);
+    }
+    
+    span {
+        margin-right: 8px;
+    }
+}
+
+/* //通用注解样式 */
+.note{
+    font-size: 14px;
+    color: #8d8d96;
+    margin: 5px;
+}

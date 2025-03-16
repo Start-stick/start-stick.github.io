@@ -7,6 +7,14 @@ import { marked } from 'marked';
 import handleExportWord from "xh-htmlword";
 // import { getOutline } from '@/api/ai'
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import ChatDialog from '@/components/ChatDialog.vue';
+import { useMessagesStore } from '@/stores/messages.js';
+
+const messagesStore = useMessagesStore()
+const messageIndex=ref(0)
+console.log(messagesStore.ask[messageIndex.value]);
+
+const container = ref(null)
 
 // 编辑器内容
 const editorContent = ref('')
@@ -24,8 +32,7 @@ const formData = ref({
   teachingGoal: ''
 })
 
-// 生成状态
-const isGenerating = ref(false)
+
 
 // 计算编辑器高度
 const editorHeight = computed(() => {
@@ -33,6 +40,10 @@ const editorHeight = computed(() => {
   return 'calc(100vh - 92px)'
 })
 
+// 处理从 ChatDialog 插入内容
+const handleInsertFromChat = (content) => {
+  editorContent.value = content
+}
 
 // 编辑器是否禁用
 const editorDisabled = ref(false)
@@ -40,97 +51,29 @@ const editorDisabled = ref(false)
 // 处理表单提交
 const handleSubmit = async () => {
   try {
-    isGenerating.value = true
+    messagesStore.addAnswer(messageIndex.value) // 添加答案
+    messagesStore.addAsk(messageIndex.value) // 添加问题
+
+    messagesStore.setStartGenerating(messageIndex.value,true) // 设置开始生成状态
     // 这里添加调用后端API的逻辑
     const query=`课程名称：${formData.value.courseName}，教学目标：${formData.value.teachingGoal}，年级：${formData.value.grade}，学科：${formData.value.subject},请帮我生成相关的教学大纲`
     //同步调用
-    
+    messagesStore.setAsk({text:query,index1:messageIndex.value,index2:messagesStore.ask[messageIndex.value].length-1})
     editorDisabled.value = true // 禁用编辑器
-    editorContent.value = '' // 清空内容
 
-    // SSE调用
-    const connectToSSE = () => {
-      isGenerating.value = true
-      const streamUrl = `https://open.bigmodel.cn/api/llm-application/open/v3/application/invoke`
-      const apiKey = '49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
-
-      const app_id = '1895304167887695872'
-      const headers = {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      }
-      
-      fetchEventSource(streamUrl, {
-        method: 'post',
-        headers,
-        body: JSON.stringify({
-          app_id,
-          messages: [{
-            role: 'user',
-            content: [{
-              value: query,
-              type: "input"
-            }],
-          }]
-        }),
-        onmessage: async (event) => {
-          const ev = ref(JSON.parse(event.data))
-          editorContent.value += ev.value.choices[0].delta.content.msg
-          
-          // 实时滚动到底部
-          await nextTick(() => {
-            const editorContainer = document.querySelector('.w-e-scroll')
-            
-            if (editorContainer) {
-              editorContainer.scrollTo({
-                top:editorContainer.scrollHeight,
-                behavior:'smooth'
-              })
-              
-            }
-          })
-        },
-        onerror(err) {
-          console.log('err', err)
-          ElMessage.error('生成失败')
-          editorDisabled.value = false
-        },
-        async onopen(response) {
-          if (response.ok) {
-            console.log('开始建立连接')
-            isGenerating.value = true
-          }
-        },
-        onclose() {
-          isGenerating.value = false
-          editorDisabled.value = false // 启用编辑器
-          console.log('关闭')
-          ElMessage.success('生成成功')
-        },
-      }).catch((err) => {
-        controller?.abort()
-        setController(new AbortController())
-        console.log({ err })
-        ElMessage.error('生成失败')
-        editorDisabled.value = false
-        throw new Error(err)
-      })
-    }
-    
-    connectToSSE()
      
   } catch (error) {
     console.error('Submit Error:', error)
     ElMessage.error('生成失败')
   } finally {
-    isGenerating.value = false
+    messagesStore.setIsGenerating(messageIndex.value,false)
     editorDisabled.value = false
   }
 }
 
 // 监听编辑器内容变化，自动滚动到底部
 watchEffect(() => {
-  if (editorContent.value && isGenerating.value) {
+  if (editorContent.value && messagesStore.isGenerating[messageIndex.value]) {
     nextTick(() => {
       const editorContainer = document.querySelector('.w-e-scroll')
       if (editorContainer) {
@@ -149,6 +92,8 @@ const exportWord = () => {
   nextTick(() => {
   document.querySelector('.export-box').innerHTML = mdContentToHtml.value 
   // console.log(mdContentToHtml.value);
+  // console.log(editorContent.value);
+  
   // console.log(document.querySelector('.export-box').innerHTML);
   
   
@@ -193,9 +138,9 @@ const regenerate = () => {
       <div class="editor-header">
         <div class="title">教学大纲</div>
         <div class="actions">
-          <el-button type="primary" :icon="Download" @click="exportWord" style="background-color: #4a6efa">
-            导出文档
-          </el-button>
+          <Down 
+          :editorContent="editorContent"
+          />
         </div>
       </div>
       <div class="editor-content">
@@ -210,7 +155,7 @@ const regenerate = () => {
     </div>
 
     <!-- 右侧表单区域 -->
-    <div class="form-section">
+    <div class="form-section" ref="container">
       <el-form :model="formData" label-position="top" class="generate-form">
         <el-form-item label="课程名称">
           <el-input v-model="formData.courseName" placeholder="请输入课程名称" />
@@ -234,14 +179,25 @@ const regenerate = () => {
         </el-form-item>
 
         <div class="form-actions">
-          <el-button type="primary" :loading="isGenerating" @click="handleSubmit" class="submit-btn" style="background-color: #4a6efa">
-            {{ isGenerating ? '生成中...' : '开始生成' }}
+          <el-button type="primary" :loading="messagesStore.isGenerating[messageIndex]" @click="handleSubmit" class="submit-btn" style="background-color: #4a6efa">
+            {{ messagesStore.isGenerating[messageIndex] ? '生成中...' : '开始生成' }}
           </el-button>
-          <el-button v-if="editorContent" @click="regenerate" :disabled="isGenerating">
+          <el-button v-if="editorContent" @click="regenerate" :disabled="messagesStore.isGenerating[messageIndex]">
             重新生成
           </el-button>
         </div>
       </el-form>
+      <div class="chat-dialog">
+        <ChatDialog 
+        v-for="(item,index) in messagesStore.ask[messageIndex]"
+        :key="item"
+        :index="index"
+        :messageIndex="messageIndex"
+        :container="container"
+        @insert-to-doc="handleInsertFromChat"
+      ></ChatDialog>
+      <el-backtop :visibility-height="50" :target="'.form-section'"  :right="38" :bottom="64" />
+      </div>
     </div>
   </div>
 </template>
@@ -367,16 +323,6 @@ const regenerate = () => {
   }
 }
 
-/* 优化按钮样式 */
-:deep(.el-button--primary) {
-  background-color: #409EFF;
-  border-color: #409EFF;
-  
-  &:hover, &:focus {
-    background-color: #66b1ff;
-    border-color: #66b1ff;
-  }
-}
 
 
 .export-box{

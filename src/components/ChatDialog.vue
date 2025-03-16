@@ -1,6 +1,6 @@
 <script setup>
 import { ref, nextTick, watchEffect} from "vue";
-import { useMessagesStore } from "@/stores/messages";
+import { useMessagesStore } from "@/stores/messages.js";
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { ElMessage } from 'element-plus'
 import {marked} from 'marked'
@@ -15,6 +15,9 @@ watchEffect(() => {
 const textRef = ref(null)
 const cursorRef = ref(null)
 const props=defineProps({
+    messageIndex:{
+        required:true
+    },
     index:{
         required:true
     },
@@ -26,36 +29,36 @@ const emit = defineEmits(['insert-to-doc'])
 // 控制器
 const controller = ref(null)
 
-// 更新光标位置
-const updateCursorPosition = async () => {
-  await nextTick(() => {
-    const textElement = textRef.value
-    const cursorElement = cursorRef.value
-    if (!textElement || !cursorElement) return
+// // 更新光标位置
+// const updateCursorPosition = async () => {
+//   await nextTick(() => {
+//     const textElement = textRef.value
+//     const cursorElement = cursorRef.value
+//     if (!textElement || !cursorElement) return
 
-    const textContent = textElement.textContent || ''
-    const tempSpan = document.createElement('span')
-    tempSpan.style.visibility = 'hidden'
-    tempSpan.style.position = 'absolute'
-    tempSpan.style.whiteSpace = 'pre-wrap'
-    tempSpan.style.font = window.getComputedStyle(textElement).font
-    tempSpan.textContent = textContent
+//     const textContent = textElement.textContent || ''
+//     const tempSpan = document.createElement('span')
+//     tempSpan.style.visibility = 'hidden'
+//     tempSpan.style.position = 'absolute'
+//     tempSpan.style.whiteSpace = 'pre-wrap'
+//     tempSpan.style.font = window.getComputedStyle(textElement).font
+//     tempSpan.textContent = textContent
 
-    document.body.appendChild(tempSpan)
-    const textRect = textElement.getBoundingClientRect()
-    const spanRect = tempSpan.getBoundingClientRect()
-    document.body.removeChild(tempSpan)
+//     document.body.appendChild(tempSpan)
+//     const textRect = textElement.getBoundingClientRect()
+//     const spanRect = tempSpan.getBoundingClientRect()
+//     document.body.removeChild(tempSpan)
 
-    // 计算最后一个字符的位置
-    const lines = Math.floor(spanRect.height / parseInt(window.getComputedStyle(textElement).lineHeight))
-    const isLastLine = spanRect.width > textRect.width * (lines - 1)
+//     // 计算最后一个字符的位置
+//     const lines = Math.floor(spanRect.height / parseInt(window.getComputedStyle(textElement).lineHeight))
+//     const isLastLine = spanRect.width > textRect.width * (lines - 1)
     
-    cursorElement.style.left = isLastLine ? 
-      `${Math.min(spanRect.width % textRect.width, textRect.width)}px` : 
-      '0px'
-    cursorElement.style.top = `${lines * parseInt(window.getComputedStyle(textElement).lineHeight) - parseInt(window.getComputedStyle(textElement).lineHeight)}px`
-  })
-}
+//     cursorElement.style.left = isLastLine ? 
+//       `${Math.min(spanRect.width % textRect.width, textRect.width)}px` : 
+//       '0px'
+//     cursorElement.style.top = `${lines * parseInt(window.getComputedStyle(textElement).lineHeight) - parseInt(window.getComputedStyle(textElement).lineHeight)}px`
+//   })
+// }
 
 // 停止生成
 // const stopGenerate = () => {
@@ -70,7 +73,7 @@ const updateCursorPosition = async () => {
 
 // 插入到文档
 const insertToDoc = () => {
-  emit('insert-to-doc', messagesStore.answer[props.index])
+  emit('insert-to-doc', messagesStore.answer[props.messageIndex][props.index])
   ElMessage.success('已插入到文档')
 }
 
@@ -78,7 +81,7 @@ const insertToDoc = () => {
 const connectToSSE = () => {
   content.value = ''
   
-  messagesStore.setIsGenerating(true)
+  messagesStore.setIsGenerating(props.messageIndex,true)
   
   controller.value = new AbortController()
   const signal = controller.value.signal
@@ -99,7 +102,7 @@ const connectToSSE = () => {
       messages: [{
         role: 'user',
         content: [{
-          value: messagesStore.ask[props.index],
+          value: messagesStore.ask[props.messageIndex][messagesStore.ask[props.messageIndex].length-1],
           type: "input"
         }],
       }]
@@ -107,10 +110,12 @@ const connectToSSE = () => {
     onmessage: async (event) => {
       const ev = ref(JSON.parse(event.data))
       content.value += ev.value.choices[0].delta.content.msg
-      await updateCursorPosition()
+      // await updateCursorPosition()
+      console.log(content.value);
+      
 
     
-      messagesStore.setAnswer({text:mdContentToHtml.value, index:messagesStore.answer.length-1})
+      messagesStore.setAnswer({text:mdContentToHtml.value, index1:props.messageIndex, index2:messagesStore.answer[props.messageIndex].length-1})
       // 实时滚动到底部
       await nextTick(() => {
             // const container = document.querySelector('.form-section')
@@ -126,19 +131,19 @@ const connectToSSE = () => {
     onerror(err) {
       console.log('err', err)
       ElMessage.error('生成失败')
-      messagesStore.setIsGenerating(false)
-      messagesStore.setStartGenerating(false)
+      messagesStore.setIsGenerating(props.messageIndex,false)
+      messagesStore.setStartGenerating(props.messageIndex,false)
     },
     onclose() {
       ElMessage.success('生成成功')
-      messagesStore.setIsGenerating(false)
-      messagesStore.setStartGenerating(false)
+      messagesStore.setIsGenerating(props.messageIndex,false)
+      messagesStore.setStartGenerating(props.messageIndex,false)
     }
   }).catch((err) => {
     console.log(err)
     ElMessage.error('生成失败')
-    messagesStore.setIsGenerating(false)
-    messagesStore.setStartGenerating(false)
+    messagesStore.setIsGenerating(props.messageIndex,false)
+    messagesStore.setStartGenerating(props.messageIndex,false)
   })
 }
 // 监听编辑器内容变化，自动滚动到底部
@@ -157,29 +162,31 @@ const connectToSSE = () => {
 // })
 
 watchEffect(()=>{
-    if(messagesStore.startGenerating&&props.index==messagesStore.ask.length-1){
-        if(messagesStore.isGenerating) return
+    if(messagesStore.startGenerating[props.messageIndex]&&props.index==messagesStore.ask[props.messageIndex].length-1){
+        if(messagesStore.isGenerating[props.messageIndex]) return
         connectToSSE()
-        messagesStore.setStartGenerating(false)
+        messagesStore.setStartGenerating(props.messageIndex,false)
     }
 })
 
 // 111生成
 const clickToGenerate = () => {
     content.value=''
-    if (messagesStore.isGenerating) return
+    if (messagesStore.isGenerating[props.messageIndex]) return
     connectToSSE()
 }
 // 重新生成
 const clickToRegenerate = () => {
-    messagesStore.addAnswer()
-    messagesStore.addAsk()
-    messagesStore.setAsk({text:messagesStore.ask[props.index],index:messagesStore.ask.length-1})
+    messagesStore.addAnswer(props.messageIndex)
+    messagesStore.addAsk(props.messageIndex)
+    messagesStore.setAsk({text:messagesStore.ask[props.messageIndex][props.index],index1:props.messageIndex,index2:messagesStore.ask[props.messageIndex].length-1})
 
     // messagesStore.setStartGenerating(true)
     
-    if(messagesStore.isGenerating) return
+    if(messagesStore.isGenerating[props.messageIndex]) return
     connectToSSE()
+    console.log('重新生成');
+    
     // messagesStore.setStartGenerating(false)
 }
 </script>
@@ -192,12 +199,12 @@ const clickToRegenerate = () => {
         </div>
         <div class="chat-content">
             <div class="message-box">
-                <div class="text-content" ref="textRef" v-html="messagesStore.answer[index]">
+                <div class="text-content" ref="textRef" v-html="messagesStore.answer[props.messageIndex][props.index]">
                 </div>
                 <div 
                     class="cursor" 
                     ref="cursorRef"
-                    :class="{ 'generating': messagesStore.isGenerating }"
+                    :class="{ 'generating': messagesStore.isGenerating[props.messageIndex] }"
                 ></div>
             <!-- 生成中状态 -->
             <!-- <template v-if="isGenerating">
@@ -214,11 +221,11 @@ const clickToRegenerate = () => {
             </template> -->
             </div>
         <!-- 生成完成状态 -->
-            <template v-if="!messagesStore.isGenerating">
+            <template v-if="!messagesStore.isGenerating[props.messageIndex]">
                 <el-button 
                 type="primary" 
                 @click="clickToGenerate"
-                v-if="!messagesStore.answer[index]"
+                v-if="!messagesStore.answer[props.messageIndex][props.index]"
                 >
                 开始生成
                 </el-button>

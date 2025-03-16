@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
+import axios from 'axios'
 const router = useRouter()
 
 // 是否为注册模式
@@ -48,8 +48,17 @@ const rules = {
 }
 
 // 处理登录
-const handleLogin = () => {
+const handleLogin =async () => {
   // TODO: 实现登录逻辑
+  // const res1=await axios.get('http://192.168.43.165:8080/analysis/score-distribution')
+  // console.log(res1);
+
+  // const res=await axios.post('http://192.168.43.165:8080/admin/teacher/login',{
+  //     username:'admin',
+  //     password:'123456',
+  // })
+  // console.log(res);
+  
   router.push('/layout/myclass')
 }
 
@@ -181,6 +190,7 @@ const toggleMode = () => {
   align-items: center;
   justify-content: center;
   padding: 40px;
+  min-width: 420px;
 
   img {
     width: 100%;
