@@ -108,13 +108,12 @@ const connectToSSE = () => {
       }]
     }),
     onmessage: async (event) => {
-      const ev = ref(JSON.parse(event.data))
-      content.value += ev.value.choices[0].delta.content.msg
-      // await updateCursorPosition()
-      console.log(content.value);
+      if(event.data==="[DONE]") return
       
-
-    
+      const ev = ref(JSON.parse(event.data))
+      content.value += ev.value.choices[0].delta?.content.msg
+      // await updateCursorPosition()
+      // console.log(content.value);
       messagesStore.setAnswer({text:mdContentToHtml.value, index1:props.messageIndex, index2:messagesStore.answer[props.messageIndex].length-1})
       // 实时滚动到底部
       await nextTick(() => {

@@ -1,5 +1,5 @@
 <script setup>
-import { Plus, MoreFilled, Document, Delete, Edit, MagicStick } from '@element-plus/icons-vue'
+import { Plus, MoreFilled, Document, Delete, Edit, MagicStick,Clock } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 
@@ -52,15 +52,15 @@ const handleDelete = (item) => {
 </script>
 
 <template>
-    <div class="ai-question">
-        <div class="ai-question-header">
-            <h3>
-                <el-icon><Document /></el-icon>
-                习题集
-            </h3>
+    <div class="ai-question body">
+        <div class="ai-question-header header">
+            <div class="header-title">
+                <el-icon class="icon"><Document /></el-icon>
+                <h2>习题通</h2>
+            </div>
             <el-button type="primary" @click="dialogVisible = true">
+                <el-icon><MagicStick /></el-icon>
                 <span>创建</span>
-                <el-icon><Plus /></el-icon>
             </el-button>
             <!-- 弹框 -->
             <el-dialog 
@@ -100,17 +100,14 @@ const handleDelete = (item) => {
 
         </div>
         <!-- 近期习题集 -->
-        <div class="ai-question-content">
-            <div class="content-header">
-                <h3>近期习题集</h3>
-                <div class="header-actions">
-                    <el-input
-                        placeholder="搜索习题集..."
-                        prefix-icon="Search"
-                        clearable
-                    />
+        <div class="ai-question-content body-body">
+            <div class="body-title">
+                <div class="title-wrapper">
+                    <el-icon><Clock /></el-icon>
+                    <h3>近期习题集</h3>
                 </div>
             </div>
+            
             <div class="recent-box">
                 <div 
                     v-for="item in questionSets" 
@@ -240,12 +237,9 @@ const handleDelete = (item) => {
 }
 
 .ai-question {
-    padding: 24px 32px;
     display: flex;
     flex-direction: column;
-    gap: 32px;
     max-width: 1400px;
-    margin: 0 auto;
 }
 //header
 .ai-question-header {

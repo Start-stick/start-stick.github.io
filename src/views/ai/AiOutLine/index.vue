@@ -1,45 +1,47 @@
 <script setup>
-import AiTeachPlan from './AiTeachPlan.vue'
-import {ref} from 'vue'
+import { ref } from 'vue'
 import {
-    Plus,
-    Delete,
-    Edit,
     Document,
     Clock,
-    Search,
+    Edit,
+    Delete,
     MagicStick
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
-const router=useRouter()
-const searchText = ref('')
+const router = useRouter()
 
-const history=ref([
+// 历史大纲列表
+const history = ref([
     {
-        title:'软工经济学',
-        time:'2025-2-06 17:35:34'
+        title: '高等数学第一章大纲',
+        time: '2024-03-15 14:30:00'
     },
     {
-        title:'高数',
-        time:'2025-2-06 17:37:28'
+        title: 'C语言指针教学大纲',
+        time: '2024-03-14 16:20:00'
     },
     {
-        title:'语文',
-        time:'2025-2-06 17:39:56'
+        title: '软件工程导论课程大纲',
+        time: '2024-03-13 09:45:00'
     },
     {
-        title:'课程体系中，JSP基础入门是一个重要的实践环节。它不仅是连接理论知识与实践操作',
-        time:'2025-2-06 17:41:44'
-    },
+        title: '数据结构与算法分析教学大纲，包含基础数据结构和常见算法的教学内容',
+        time: '2024-03-12 15:20:00'
+    }
 ])
 
+// 处理删除
 const handleDelete = (index) => {
     // 阻止事件冒泡，防止触发行点击
     event.stopPropagation()
     history.value.splice(index, 1)
+    ElMessage.success('删除成功')
 }
-const handleEdit=(index)=>{
+
+// 处理编辑
+const handleEdit = (index) => {
     window.open(`/edit?index=${index}&type=outline`)
 }
 
@@ -52,8 +54,9 @@ const handleRowClick = (row, column, event) => {
     handleEdit(index)
 }
 
-const goToGenerate=()=>{
-    router.push('/layout/teachplan/generate')
+// 跳转到生成页面
+const goToGenerate = () => {
+    router.push('/layout/outline/generate')
 }
 </script>
 
@@ -62,7 +65,7 @@ const goToGenerate=()=>{
         <div class="set-header header">
             <div class="header-title">
                 <el-icon class="icon"><Document /></el-icon>
-                <h2>教案助手</h2>
+                <h2>大纲助手</h2>
             </div>
             <el-button type="primary" @click="goToGenerate" class="button">
                 <el-icon><MagicStick /></el-icon>
@@ -130,72 +133,9 @@ const goToGenerate=()=>{
 </template>
 
 <style lang="scss" scoped>
-// .set{
-//     padding: 20px 40px;
-//     display: grid;
-//     gap: 20px;
-//     background-color: #f6f8fc;
-// }
 
-// .set-header{
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: space-between;
-//     align-items: center;
-//     padding: 16px 0;
-    
-//     .header-title {
-//         display: flex;
-//         align-items: center;
-//         gap: 12px;
-        
-//         .icon {
-//             font-size: 24px;
-//             color: #4e6ef2;
-//         }
-        
-//         h2 {
-//             font-size: 22px;
-//             color: #1a1a1a;
-//             margin: 0;
-//             font-weight: 600;
-//         }
-//     }
-// }
-
-.set-body{
-    // width: 100%;
-    // display: flex;
-    // flex-direction: column;
-    // gap: 16px;
-    
-    // .body-title{
-    //     display: flex;
-    //     justify-content: space-between;
-    //     align-items: center;
-    //     padding: 0 4px;
-        
-    //     .title-wrapper {
-    //         display: flex;
-    //         align-items: center;
-    //         gap: 8px;
-            
-    //         .el-icon {
-    //             font-size: 18px;
-    //             color: #4e6ef2;
-    //         }
-            
-    //         h3 {
-    //             font-size: 16px;
-    //             color: #606266;
-    //             margin: 0;
-    //             font-weight: 500;
-    //         }
-    //     }
-        
-    // }
-    
-    .body-main{
+.set-body {
+    .body-main {
         border-radius: 16px;
         background-color: #fff;
         padding: 20px 20px 32px;

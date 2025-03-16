@@ -15,7 +15,8 @@ const router = createRouter({
       component: Layout,
       children:[
         { path: '/layout/myclass', component: MyClass },
-        {path:'/layout/outline',component:()=>import('@/views/ai/AiOutline.vue')},
+        {path:'/layout/outline/generate',component:()=>import('@/views/ai/AiOutLine/AiOutline.vue')},
+        {path:'/layout/outline',component:()=>import('@/views/ai/AiOutLine/index.vue')},
         { path: '/layout/teachplan', component: () => import('@/views/ai/AiTeachPlan/index.vue') },
         { path: '/layout/teachplan/generate', component: () => import('@/views/ai/AiTeachPlan/AiTeachPlan.vue') },
         { path: '/layout/resource', component: () => import('@/views/ai/AiResource.vue') },

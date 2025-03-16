@@ -16,7 +16,6 @@ const props=defineProps({
     },
 })
 const mdContentToHtml=ref('')
-console.log(props.editorContent);
 
 watchEffect(() => {
     mdContentToHtml.value = marked(props.editorContent)

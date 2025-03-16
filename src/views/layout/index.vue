@@ -15,11 +15,12 @@ import {
   Box,
   DataAnalysis,
   MagicStick,
-  Monitor
+  Monitor,
+  More
 } from '@element-plus/icons-vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-// import { useRouter } from 'vue-router'
+
 //定义变量 控制左侧菜单是否折叠
 const isCollapse = ref(false)
 // 添加鼠标悬停状态
@@ -27,10 +28,7 @@ const isHovering = ref(false)
 // 当前选中菜单项
 const route=useRoute()
 const activeMenu = ref(route.path)
-// const activeMenu = ref('/mycourse/outline')
-// const router=useRouter()
-// router.push('/mycourse/outline')
-
+const router = useRouter()
 
 // 添加课程信息数据
 const courseInfo = {
@@ -130,7 +128,7 @@ const handleSelect = (index) => {
 // 处理用户操作
 const handleCommand = (command) => {
   switch (command) {
-    case 'profile':
+    case 'account':
       // 跳转到个人中心
       ElMessage.info('跳转到个人中心')
       break
@@ -255,42 +253,43 @@ const handleCommand = (command) => {
                 </el-menu-item>
               </template>
             </el-menu>
+            <!-- 用户信息区域 -->
+            <div class="menu-user-info" :class="{ 'collapsed': isCollapse }">
+              <el-popover
+                placement="right"
+                :width="200"
+                trigger="click"
+                popper-class="user-menu-popover"
+              >
+                <template #reference>
+                  <div class="user-content">
+                    <img class="user-avatar" src="@/assets/q.png" alt="avatar" />
+                    <div class="user-detail" v-show="!isCollapse">
+                      <span class="username">MIAO</span>
+                      <span class="role">Designer</span>
+                    </div>
+                    <el-icon class="more-icon" v-show="!isCollapse"><More /></el-icon>
+                  </div>
+                </template>
+                <div class="user-menu">
+                  <div class="menu-item" @click="handleCommand('account')">
+                    <el-icon><User /></el-icon>
+                    <span>Account Info 帐户信息</span>
+                  </div>
+                  <div class="menu-item" @click="handleCommand('settings')">
+                    <el-icon><Setting /></el-icon>
+                    <span>Settings 设置</span>
+                  </div>
+                  
+                  <div class="menu-item logout" @click="handleCommand('logout')">
+                    <el-icon><SwitchButton /></el-icon>
+                    <span>Log Out 登出</span>
+                  </div>
+                </div>
+              </el-popover>
+            </div>
         </el-aside>
           <el-container class="main-container">
-            <el-header height="52px">
-              <div class="title-user">
-                <div class="title">{{ currentTitle||firstTitle() }}</div>
-                <div class="user">
-                  <el-dropdown @command="handleCommand" trigger="click">
-                    <div class="user-info">
-                      <el-avatar :size="32" :src="userInfo.avatar" />
-                      <div class="user-detail">
-                        <span class="username">{{ userInfo.name }}</span>
-                        <span class="role-tag">{{ userInfo.role }}</span>
-                        <i class="arrow-icon"></i>
-                      </div>
-                    </div>
-                    <template #dropdown>
-                      <el-dropdown-menu>
-                        <el-dropdown-item command="profile">
-                          <el-icon><User /></el-icon>
-                          个人中心
-                        </el-dropdown-item>
-                        <el-dropdown-item command="settings">
-                          <el-icon><Setting /></el-icon>
-                          系统设置
-                        </el-dropdown-item>
-                        <el-dropdown-item divided command="logout">
-                          <el-icon><SwitchButton /></el-icon>
-                          退出登录
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
-                </div>
-              </div>
-              <div class="line"></div>
-            </el-header>
             <el-main>
               <div class="course-container">
                 <router-view></router-view>
@@ -302,6 +301,9 @@ const handleCommand = (command) => {
 </template>
 
 <style lang="scss" scoped>
+.course-container{
+  height: calc(100vh - 40px);
+}
 /* 整体框架容器样式 */
 
 .el-main ,.el-header,el-container{
@@ -443,78 +445,7 @@ const handleCommand = (command) => {
     background-color:#e6e6e6;
   }
 }
-.title-user {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 0 20px;
-  /* background-color: #fff; */
-  /* border-bottom: 1px solid #e6e6e6; */
 
-  .title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #303133;
-    flex: 1;
-  }
-
-  .user {
-    .user-info {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background-color: #f5f7fa;
-        
-        .arrow-icon {
-          transform: rotate(180deg);
-        }
-      }
-
-      .el-avatar {
-        border: 2px solid #fff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        
-        &:hover {
-          transform: scale(1.05);
-        }
-      }
-
-      .user-detail {
-        display: flex;
-        align-items: center;
-        margin-left: 8px;
-
-        .username {
-          font-size: 14px;
-          color: #303133;
-          margin-right: 8px;
-        }
-
-        .role-tag {
-          padding: 2px 6px;
-          background-color: #ecf5ff;
-          color: #409EFF;
-          border-radius: 3px;
-          font-size: 12px;
-        }
-
-        .arrow-icon {
-          width: 12px;
-          height: 12px;
-          margin-left: 4px;
-          background: url('@/assets/arrowDown.png') no-repeat center;
-          background-size: contain;
-          transition: transform 0.3s ease;
-        }
-      }
-    }
-  }
-}
 
 
 /* 内容区域样式 */
@@ -571,11 +502,107 @@ const handleCommand = (command) => {
 .el-menu--collapse .custom-menu-icon {
   margin: 0 auto;
 }
+
+
+
+.menu-user-info {
+  padding: 16px;
+  margin-top: 50px;
+  border-top: 1px solid #e4e7ed;
+  
+  &.collapsed {
+    padding: 16px 12px;
+    
+    .user-content {
+      justify-content: center;
+    }
+  }
+  
+  .user-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+    
+    .user-detail {
+      display: flex;
+      flex-direction: column;
+      margin-left: 4px;
+      flex: 1;
+      
+      .username {
+        font-size: 13px;
+        color: #1a1a1a;
+        font-weight: normal;
+      }
+      
+      .role {
+        font-size: 12px;
+        color: #909399;
+      }
+    }
+  }
+}
+
+/* 用户菜单样式 */
+.user-menu {
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &:hover {
+      background-color: #f5f7fa;
+    }
+    
+    .el-icon {
+      font-size: 16px;
+      color: #606266;
+    }
+    
+    span {
+      font-size: 14px;
+      color: #303133;
+    }
+    
+    &.logout {
+      border-top: 1px solid #e4e7ed;
+      margin-top: 4px;
+      padding-top: 12px;
+      
+      .el-icon {
+        color: #f56c6c;
+      }
+      
+      span {
+        color: #f56c6c;
+      }
+    }
+  }
+}
 </style>
 
 <style>
 .user .el-dropdown-menu__item:not(.is-disabled):focus, .el-dropdown-menu__item:not(.is-disabled):hover{
   color:#627aff;
   background-color: #f0f6ff;
+}
+
+/* 弹出菜单样式 */
+.user-menu-popover {
+  padding: 4px 0 !important;
+  border-radius: 8px !important;
 }
 </style>

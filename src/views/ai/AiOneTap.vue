@@ -9,7 +9,7 @@ const handleClick = async () => {
 
     const streamUrl = `https://api.coze.cn/v3/chat`
     const apiKey = 'pat_DjueLDXeXdMtOmDd83u0svybLjPo05fEFhgkBZcCoNFECUxWLgcpghQircY5VCOk'
-    const bot_id = '7480200186401275939'
+    const bot_id = '7482348702477205539'
     const headers = {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
@@ -121,8 +121,8 @@ const handleClick = async () => {
                 additional_messages: [
                     {
                         role: 'user',
-                        content: '给我《高数》的ppt',
-                        content_type: 'file'
+                        content: '给我《高数》的教学大纲',
+                        content_type: 'text'
 
                     }
 

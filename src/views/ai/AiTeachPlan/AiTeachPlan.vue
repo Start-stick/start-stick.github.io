@@ -6,7 +6,6 @@ import { Download, Plus, Upload, Document, Clock } from '@element-plus/icons-vue
 import { marked } from 'marked'
 import { useMessagesStore } from '@/stores/messages.js'
 import handleExportWord from "xh-htmlword"
-import ChatDialog from '@/components/ChatDialog.vue'
 // import { getOutline } from '@/api/ai'
 // import { fetchEventSource } from '@microsoft/fetch-event-source'
 
@@ -61,9 +60,6 @@ const ask=ref('生成教案')
 const messagesStore=useMessagesStore()
 const messageIndex=ref(1)
 console.log(messagesStore.answer[messageIndex.value].length);
-
-// 导入大纲对话框
-const importDialogVisible = ref(false)
 
 // 处理表单提交
 const handleSubmit = async () => {
@@ -246,7 +242,7 @@ const handleImportOutline = () => {
     ? formData.value.outline 
     : formData.value.selectedOutline.content
   
-  const query = `请根据以下教学大纲生成详细的教案：\n${outlineContent}`
+  const query = `请根据以下教学大纲生成详细的教案(教学设计)：\n${outlineContent}`
   
   messagesStore.addAnswer(messageIndex.value)
   messagesStore.addAsk(messageIndex.value)
@@ -257,7 +253,6 @@ const handleImportOutline = () => {
     index2: messagesStore.ask[messageIndex.value].length - 1
   })
   
-  importDialogVisible.value = false
 }
 </script>
 
@@ -268,9 +263,9 @@ const handleImportOutline = () => {
       <div class="editor-header">
         <div class="title">教学教案</div>
         <div class="actions">
-          <el-button type="primary" :icon="Download" @click="exportWord" style="background-color: #4a6efa">
-            导出文档
-          </el-button>
+          <Down
+          :editorContent="editorContent"
+          />
         </div>
       </div>
       <div class="editor-content">
@@ -381,7 +376,7 @@ const handleImportOutline = () => {
           </div>
           
           <div class="import-actions">
-            <el-button type="primary" @click="handleImportOutline">
+            <el-button type="primary" @click="handleImportOutline" class="button">
               开始生成
             </el-button>
           </div>
@@ -402,33 +397,6 @@ const handleImportOutline = () => {
       
       <el-backtop :visibility-height="50" :target="'.form-section'"  :right="38" :bottom="64" />
     </div>
-
-    <!-- 导入大纲对话框 -->
-    <el-dialog
-      v-model="importDialogVisible"
-      title="导入教学大纲"
-      width="50%"
-      :close-on-click-modal="false"
-    >
-      <el-form :model="formData">
-        <el-form-item label="大纲内容">
-          <el-input
-            v-model="formData.outline"
-            type="textarea"
-            :rows="10"
-            placeholder="请粘贴教学大纲内容"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="importDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleImportOutline">
-            确认导入
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 

@@ -1,20 +1,28 @@
 <script setup>
 import { ref, computed,watchEffect, nextTick } from 'vue'
-import Editor from "@/components/Editor.vue"
 import { ElMessage } from 'element-plus'
-import { Download } from '@element-plus/icons-vue'
+import { Document, Clock, Edit, Delete, MagicStick } from '@element-plus/icons-vue'
 import { marked } from 'marked';
 import handleExportWord from "xh-htmlword";
 // import { getOutline } from '@/api/ai'
-import { fetchEventSource } from '@microsoft/fetch-event-source';
-import ChatDialog from '@/components/ChatDialog.vue';
 import { useMessagesStore } from '@/stores/messages.js';
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const messagesStore = useMessagesStore()
 const messageIndex=ref(0)
-console.log(messagesStore.ask[messageIndex.value]);
 
-const container = ref(null)
+// 历史大纲列表
+const outlineHistory = ref([
+  {
+    title: '高等数学第一章大纲',
+    time: '2024-03-15 14:30:00',
+  },
+  {
+    title: 'C语言指针教学大纲',
+    time: '2024-03-14 16:20:00',
+  }
+])
 
 // 编辑器内容
 const editorContent = ref('')
