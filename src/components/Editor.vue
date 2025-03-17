@@ -108,7 +108,13 @@ export default {
     const handleChange = (editor) => {
       emit('update:modelValue', editor.getHtml())
     }
-
+    editorConfig.onMaxLength = function (editorRef) {
+      console.log('超长');
+      
+      // TS 语法
+      // editorConfig.onMaxLength = function (editor) {            // JS 语法
+      // 当达到 maxlength 限制时，触发该回调函数
+    }
     // 监听 modelValue 变化
     watch(() => props.modelValue, (newVal) => {
       if (newVal !== valueHtml.value) {
@@ -125,10 +131,11 @@ export default {
       handleCreated,
       handleChange
     }
+    
+
   }
 }
 </script>
-
 <style>
 .editor-container {
   height: 100%;

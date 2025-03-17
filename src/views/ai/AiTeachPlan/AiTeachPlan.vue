@@ -164,7 +164,7 @@ const handleSubmit = async () => {
 
 // 监听编辑器内容变化，自动滚动到底部
 watchEffect(() => {
-  if (editorContent.value && messagesStore.isGenerating) {
+  if (editorContent.value ) {
     nextTick(() => {
       const editorContainer = document.querySelector('.w-e-scroll')
       if (editorContainer) {

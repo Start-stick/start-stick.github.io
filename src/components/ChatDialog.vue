@@ -7,10 +7,10 @@ import {marked} from 'marked'
 import { RefreshLeft, Connection } from '@element-plus/icons-vue'
 
 const messagesStore = useMessagesStore()
-const content = ref('')
+const editorContent = ref('')
 const mdContentToHtml = ref('')
 watchEffect(() => {
-    mdContentToHtml.value = marked(content.value)
+    mdContentToHtml.value = marked(editorContent.value)
 })
 const textRef = ref(null)
 const cursorRef = ref(null)
@@ -29,48 +29,6 @@ const emit = defineEmits(['insert-to-doc'])
 // 控制器
 const controller = ref(null)
 
-// // 更新光标位置
-// const updateCursorPosition = async () => {
-//   await nextTick(() => {
-//     const textElement = textRef.value
-//     const cursorElement = cursorRef.value
-//     if (!textElement || !cursorElement) return
-
-//     const textContent = textElement.textContent || ''
-//     const tempSpan = document.createElement('span')
-//     tempSpan.style.visibility = 'hidden'
-//     tempSpan.style.position = 'absolute'
-//     tempSpan.style.whiteSpace = 'pre-wrap'
-//     tempSpan.style.font = window.getComputedStyle(textElement).font
-//     tempSpan.textContent = textContent
-
-//     document.body.appendChild(tempSpan)
-//     const textRect = textElement.getBoundingClientRect()
-//     const spanRect = tempSpan.getBoundingClientRect()
-//     document.body.removeChild(tempSpan)
-
-//     // 计算最后一个字符的位置
-//     const lines = Math.floor(spanRect.height / parseInt(window.getComputedStyle(textElement).lineHeight))
-//     const isLastLine = spanRect.width > textRect.width * (lines - 1)
-    
-//     cursorElement.style.left = isLastLine ? 
-//       `${Math.min(spanRect.width % textRect.width, textRect.width)}px` : 
-//       '0px'
-//     cursorElement.style.top = `${lines * parseInt(window.getComputedStyle(textElement).lineHeight) - parseInt(window.getComputedStyle(textElement).lineHeight)}px`
-//   })
-// }
-
-// 停止生成
-// const stopGenerate = () => {
-//     console.log('stopGenerate')
-    
-//   if (controller.value) {
-//     controller.value.abort()
-//     isGenerating.value = false
-//     ElMessage.info('已停止生成')
-//   }
-// }
-
 // 插入到文档
 const insertToDoc = () => {
   emit('insert-to-doc', messagesStore.answer[props.messageIndex][props.index])
@@ -78,87 +36,158 @@ const insertToDoc = () => {
 }
 
 // SSE调用
-const connectToSSE = () => {
-  content.value = ''
+const connectToSSE =  async () => {
+  editorContent.value = ''
   
   messagesStore.setIsGenerating(props.messageIndex,true)
   
   controller.value = new AbortController()
   const signal = controller.value.signal
   
-  const streamUrl = `https://open.bigmodel.cn/api/llm-application/open/v3/application/invoke`
-  const apiKey = '49613b99603942908e202474f204ead5.LYg0QJKY8Mkr6rjv'
-  const app_id = '1895304167887695872'
-  
-  fetchEventSource(streamUrl, {
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    signal,
-    body: JSON.stringify({
-      app_id,
-      messages: [{
-        role: 'user',
-        content: [{
-          value: messagesStore.ask[props.messageIndex][messagesStore.ask[props.messageIndex].length-1],
-          type: "input"
-        }],
-      }]
-    }),
-    onmessage: async (event) => {
-      if(event.data==="[DONE]") return
-      
-      const ev = ref(JSON.parse(event.data))
-      content.value += ev.value.choices[0].delta?.content.msg
-      // await updateCursorPosition()
-      // console.log(content.value);
-      messagesStore.setAnswer({text:mdContentToHtml.value, index1:props.messageIndex, index2:messagesStore.answer[props.messageIndex].length-1})
-      // 实时滚动到底部
-      await nextTick(() => {
-            // const container = document.querySelector('.form-section')
-            if (props.container) {
-              props.container.scrollTo({
-                top: props.container.scrollHeight,
-                behavior: 'smooth'
-              })
-            }
-          })
-      
-    },
-    onerror(err) {
-      console.log('err', err)
-      ElMessage.error('生成失败')
-      messagesStore.setIsGenerating(props.messageIndex,false)
-      messagesStore.setStartGenerating(props.messageIndex,false)
-    },
-    onclose() {
-      ElMessage.success('生成成功')
-      messagesStore.setIsGenerating(props.messageIndex,false)
-      messagesStore.setStartGenerating(props.messageIndex,false)
+  const streamUrl = `https://api.coze.cn/v3/chat`
+    const apiKey = 'pat_DjueLDXeXdMtOmDd83u0svybLjPo05fEFhgkBZcCoNFECUxWLgcpghQircY5VCOk'
+    const bot_id = '7482348702477205539'
+    const headers = {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
     }
-  }).catch((err) => {
-    console.log(err)
-    ElMessage.error('生成失败')
-    messagesStore.setIsGenerating(props.messageIndex,false)
-    messagesStore.setStartGenerating(props.messageIndex,false)
-  })
+
+    const eventSource = ref(null)
+    const numbers = ref([])
+
+    //数据处理函数
+    let lastProcessedIndex = 0;
+    let messageQueue = []; // 消息队列，用于存放待打字的消息
+    let isTyping = false; // 标志，用于指示是否正在打字
+    let messageContent = ''; // 用于累积消息内容
+
+    function processMessageContent(content) {
+        let currentIndex = lastProcessedIndex;
+        let eventDeltaIndex = content.indexOf('event:conversation.message.delta', currentIndex);
+
+        while (eventDeltaIndex !== -1) {
+            // 找到下一个 'event:conversation.message.delta' 的位置
+            let nextEventDeltaIndex = content.indexOf('event:conversation.message.delta', eventDeltaIndex + 1);
+            let endEventDeltaIndex = nextEventDeltaIndex !== -1 ? nextEventDeltaIndex : content.length;
+
+            // 提取数据部分，移除"data:"前缀并找到 JSON 对象的结束位置 '}'
+            let dataString = content.substring(eventDeltaIndex, endEventDeltaIndex);
+            let dataIndex = dataString.indexOf('data:');
+            let jsonEndIndex = dataString.indexOf('}', dataIndex) + 1;
+
+            // 确保我们找到了完整的 JSON 对象
+            if (jsonEndIndex > 9 && dataString[jsonEndIndex - 1] === '}') {
+                try {
+                    // 尝试解析 JSON 对象
+                    const dataObject = JSON.parse(dataString.substring(dataIndex + 5, jsonEndIndex));
+                    // 使用打字机效果逐字添加消息
+                    messageQueue.push(dataObject.content);
+                    processQueue();
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                }
+
+                // 更新处理位置
+                currentIndex = eventDeltaIndex + jsonEndIndex;
+                eventDeltaIndex = nextEventDeltaIndex;
+            } else {
+                // 如果没有找到完整的 JSON 对象，则停止处理
+                break;
+            }
+        }
+        // 检测到 event:done，重置 messageContent
+        const eventDoneIndex = content.indexOf('event:done', lastProcessedIndex)
+        if (eventDoneIndex !== -1) {
+            messageContent = ''; // 重置内容
+            lastProcessedIndex = 0; // 重置处理位置
+            return; // 退出处理
+        }
+        lastProcessedIndex = currentIndex;
+    }
+    function processQueue() {
+        if (!isTyping && messageQueue.length > 0) {
+            isTyping = true;
+            typeMessage(messageQueue.shift(), true); // 开始打字队列中的下一条消息
+        }
+    }
+
+    function typeMessage(content, isLeft) {
+        // 初始化index
+        let index = 0;
+        (function typeNextChar() {
+            // 逐字添加内容
+            if (index < content.length) {
+              editorContent.value+=content[index]
+              messagesStore.setAnswer({text:mdContentToHtml.value,index1:props.messageIndex,index2:messagesStore.answer[props.messageIndex].length-1})
+              index++; // 更新索引
+              requestAnimationFrame(typeNextChar); // 使用requestAnimationFrame模拟打字效果
+            }else{
+              isTyping = false;
+              processQueue(); // 继续处理队列中的下一条消息
+            }
+        })();
+    }
+    try {
+        const response = await fetch(streamUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                bot_id,
+                user_id: "123",
+                stream: true,
+                auto_save_history: true,
+                additional_messages: [
+                    {
+                        role: 'user',
+                        content: messagesStore.ask[props.messageIndex][messagesStore.ask[props.messageIndex].length-1],
+                        content_type: 'text'
+
+                    }
+
+                ]
+            })
+        });
+        // 创建一个可读流
+        const reader = response.body.getReader();
+        console.log(reader);
+
+        let decoder = new TextDecoder('utf-8');
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                console.log('Stream ended');
+                messagesStore.setIsGenerating(props.messageIndex,false)
+                messagesStore.setStartGenerating(props.messageIndex,false)
+                break;
+            }
+            const chunk = decoder.decode(value, { stream: true });
+            messageContent += chunk; // 累积消息内容
+
+            //   // 处理累积的消息内容
+            processMessageContent(messageContent);
+            // 实时滚动到底部
+            await nextTick(() => {
+                if (props.container) {
+                    props.container.scrollTo({
+                        top: props.container.scrollHeight,
+                        behavior: 'smooth'
+                    })
+                }
+            })
+        }
+
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        messagesStore.setIsGenerating(props.messageIndex,false)
+        messagesStore.setStartGenerating(props.messageIndex,false)
+        return null
+    }
+
 }
-// 监听编辑器内容变化，自动滚动到底部
-// watchEffect(() => {
-//   if (content.value && messagesStore.isGenerating) {
-//     nextTick(() => {
-//       const container = document.querySelector('.form-section')
-//       if (container) {
-//         container.scrollTo({
-//           top: container.scrollHeight,
-//           behavior: 'smooth'
-//         })
-//       }
-//     })
-//   }
-// })
 
 watchEffect(()=>{
     if(messagesStore.startGenerating[props.messageIndex]&&props.index==messagesStore.ask[props.messageIndex].length-1){
@@ -170,7 +199,7 @@ watchEffect(()=>{
 
 // 111生成
 const clickToGenerate = () => {
-    content.value=''
+    editorContent.value=''
     if (messagesStore.isGenerating[props.messageIndex]) return
     connectToSSE()
 }
@@ -205,19 +234,6 @@ const clickToRegenerate = () => {
                     ref="cursorRef"
                     :class="{ 'generating': messagesStore.isGenerating[props.messageIndex] }"
                 ></div>
-            <!-- 生成中状态 -->
-            <!-- <template v-if="isGenerating">
-                <el-button 
-                v-if="isGenerating"
-                type="danger" 
-                @click="stopGenerate"
-                class="stop-generate"
-                :loading="isGenerating"
-                plain
-                >
-                停止生成
-                </el-button>
-            </template> -->
             </div>
         <!-- 生成完成状态 -->
             <template v-if="!messagesStore.isGenerating[props.messageIndex]">

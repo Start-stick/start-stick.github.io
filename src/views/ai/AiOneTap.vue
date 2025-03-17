@@ -97,7 +97,9 @@ const handleClick = async () => {
         (function typeNextChar() {
             // 逐字添加内容
             if (index < content.length) {
+                
                 currentBubbleElement.textContent += content[index]; // 逐字添加
+                
                 index++; // 更新索引
                 requestAnimationFrame(typeNextChar); // 使用requestAnimationFrame模拟打字效果
             }else{
@@ -121,7 +123,7 @@ const handleClick = async () => {
                 additional_messages: [
                     {
                         role: 'user',
-                        content: '给我《高数》的教学大纲',
+                        content: '给我《高数》课程相关的 视频',
                         content_type: 'text'
 
                     }
@@ -144,6 +146,8 @@ const handleClick = async () => {
             const chunk = decoder.decode(value, { stream: true });
 
             messageContent += chunk; // 累积消息内容
+            console.log(chunk);
+            
 
 
             //   // 处理累积的消息内容

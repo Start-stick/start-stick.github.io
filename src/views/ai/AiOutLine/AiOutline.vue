@@ -40,7 +40,8 @@ const formData = ref({
   teachingGoal: ''
 })
 
-
+//要滚动的对象
+const container = ref(null)
 
 // 计算编辑器高度
 const editorHeight = computed(() => {
@@ -81,11 +82,13 @@ const handleSubmit = async () => {
 
 // 监听编辑器内容变化，自动滚动到底部
 watchEffect(() => {
-  if (editorContent.value && messagesStore.isGenerating[messageIndex.value]) {
+  if (editorContent.value ) {
     nextTick(() => {
       const editorContainer = document.querySelector('.w-e-scroll')
       if (editorContainer) {
-        editorContainer.scrollTop = editorContainer.scrollHeight
+        editorContainer.scrollTo({
+        top:editorContainer.scrollHeight,
+        behavior: 'smooth'})
       }
     })
   }
