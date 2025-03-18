@@ -1,7 +1,9 @@
 <script setup>
-import { ref } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-
+import { onMounted, ref } from 'vue'
+import { Search, CircleCheckFilled,LocationFilled} from '@element-plus/icons-vue'
+import { progressProps } from 'element-plus'
+import loading_box from '@/components/loading/loading_box.vue'
+// import LoadingBox from '@/components/loading/loading_box.vue'
 // 搜索标签页
 const searchTabs = [
   { name: '综合', type: 'all' },
@@ -13,7 +15,12 @@ const searchTabs = [
   { name: '图书', type: 'book' },
   { name: '互联网资源', type: 'internet' }
 ]
+const stage=ref(2)
+onMounted(()=>{
 
+  document.querySelector('#stage_01').style.setProperty('--progress','100%')
+})
+    // document.querySelector('#stage_02').style.setProperty('--progress',props.progress2)
 // 当前激活的标签
 const activeTab = ref('all')
 
@@ -92,6 +99,9 @@ const handleSearch = () => {
           </div>
         </div>
       </div>
+      <loading_box
+      :stage="stage"
+      />
     </div>
 
     <!-- 搜索结果区域 -->
@@ -163,6 +173,7 @@ const handleSearch = () => {
 </template>
 
 <style lang="scss" scoped>
+
 //搜索结果模块样式
 .search-results{
   display: flex;

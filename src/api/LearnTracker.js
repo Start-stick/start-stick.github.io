@@ -1,14 +1,9 @@
-<script setup>
-import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
-import { ref ,nextTick} from 'vue'
-// import { getStream } from '@/api/ai'
-import axios from 'axios'
 import request from '@/utils/request'
-import {  getAiAnalysis } from '@/api/LearnTracker'
+import {ref} from 'vue'
 
 
-const handleClick = async () => {
-
+const query='请根据以下学生进行学情分析：小明同学，每周学习25小时，一周互动10次，作业平均成绩80分，实验课平均成绩70分，90%出勤率，作业100%完成。'
+const bycoze=async (query)=>{
     console.log('一键生成')
 
     const streamUrl = `https://api.coze.cn/v3/chat`
@@ -27,7 +22,7 @@ const handleClick = async () => {
                 additional_messages: [
                     {
                         role: 'user',
-                        content: '请根据以下学生进行学情分析：小明同学，每周学习25小时，一周互动10次，作业平均成绩80分，实验课平均成绩70分，90%出勤率，作业100%完成。',
+                        content: query,
                         content_type: 'text'
 
                     }
@@ -75,8 +70,8 @@ const handleClick = async () => {
                 });
                 console.log(res2.data.data[1].content);
                 console.log(JSON.parse(res2.data.data[1].content));
-                
                 clearInterval(timer)
+                return JSON.parse(res2.data.data[1].content)
             }
             },1000)
         
@@ -85,32 +80,8 @@ const handleClick = async () => {
         console.error('There was a problem with the fetch operation:', error);
         return null
     }
-
 }
-const onClick=async ()=>{
-    console.log(getAiAnalysis());
-    
+export const  getAiAnalysis=(data)=>{
+    const res=bycoze(query)
+    return res
 }
-</script>
-
-<template>
-    <div>
-        一键生成
-        <button @click="onClick">1111</button>
-        <div class="chat">
-
-            <div class="chatWindow">
-
-            </div>
-        </div>
-    </div>
-</template>
-
-<style lang="scss" scoped>
-.chat{
-    width: 400px;
-    height: calc(100vh - 120px);
-    border: 1px solid #000;
-    overflow-y: auto;
-}
-</style> 

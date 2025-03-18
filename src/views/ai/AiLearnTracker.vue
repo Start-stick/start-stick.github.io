@@ -41,6 +41,7 @@ const title = [
     ]
   }
 ]
+
 // 智能分析数据
 const aiAnalysis = {
   behavior: {
@@ -223,7 +224,11 @@ window.addEventListener('resize', () => {
                 
             </div>
             <div class="learn-status-aside">
-                <h3 class="title">智能分析</h3>
+                <h3 class="title">
+                    智能分析
+                    <button class="button">刷新</button>
+                </h3>
+                div.
                 <div class="ai-list list scrollbar-6">
                     <!-- 学习行为分析 -->
                     <div class="ai-behavior ai-item item">

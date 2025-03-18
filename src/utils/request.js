@@ -9,7 +9,7 @@ import axios from 'axios'
 //自制智能体2
 // const streamUrl = `https://api.coze.cn/v3/chate`
 const apiKey ='pat_DjueLDXeXdMtOmDd83u0svybLjPo05fEFhgkBZcCoNFECUxWLgcpghQircY5VCOk'
-const bot_id='7480200186401275939'
+const bot_id='7482348702477205539'
 
 //智能体
 const headers = {
