@@ -52,7 +52,7 @@ onMounted(() => {
     window.addEventListener('resize', () => {
         console.log('222窗口大小变化');
         console.log(trackerStore.isResize);
-        
+        if(chart)
         chart.resize()
     })
     watchEffect(()=>{

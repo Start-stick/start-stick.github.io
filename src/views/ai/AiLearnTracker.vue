@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import EchartsBar from '@/components/echarts/EchartsBar.vue'
 import EchartsPie from '@/components/echarts/EchartsPie.vue'
 import EchartsRadar from '@/components/echarts/EchartsRadar.vue'
-import { DataAnalysis, Collection, Reading, Refresh } from '@element-plus/icons-vue'
+import { DataAnalysis, Collection, Reading, Refresh,Histogram,Close } from '@element-plus/icons-vue'
 import { learningData,aiSummary } from './AiEcharts.js'
 import { useRouter } from 'vue-router'
 import { useTrackerStore } from '@/stores/tracker'
@@ -134,11 +134,18 @@ window.addEventListener('resize', () => {
     
 })
 
-// // 监听窗口大小变化---只能先这样
-// const router = useRouter()
-// window.addEventListener('resize', () => {
-//     router.go(0)
-// })
+//新结构功能区
+const aiAnalysisShow=ref(false)
+const clickForShow=()=>{
+    aiAnalysisShow.value=!aiAnalysisShow.value
+    console.log(aiAnalysisShow);
+    
+}
+
+const clickForClose=()=>{
+    aiAnalysisShow.value=!aiAnalysisShow.value
+    
+}
 </script>
 
 <template>
@@ -172,9 +179,140 @@ window.addEventListener('resize', () => {
             </div>
         </div>
 
-        <div class="learn-status">
+        <div class="tracker-body">
+            <div class="learn-status">
+                <div class="learn-status-main">
+                    <div class="mode-header">
+                        <h3 class="title">
+                            学情分析
+                        </h3>
+                        <div class="summary-analysis-button" @click="clickForShow">
+                            <el-icon><Histogram /></el-icon>
+
+                        </div>
+
+                    </div>
+                    <div class="status-list list scrollbar-6">
+                        <div class="learn-behavior item scrollbar-4">
+                            <div class="echarts-whole" style="width: 100%; height: 100%;">
+                                <EchartsBar 
+                                :data="learningData.studyBehavior.timeAndInteraction"
+                                :chartWidth="chartWidth"
+                                :chartHeight="chartHeight"
+                                />
+                            </div>
+                        </div>
+                        <div class="learn-grade item scrollbar-4">
+                            <div class="echarts-half" style="width: 50%; height: 100%;">
+                                <EchartsLine 
+                                :data="learningData.performance.scoreAnalysis"
+                                :chartWidth="chartWidth"
+                                :chartHeight="chartHeight"
+                                />
+                            </div>
+                            <span></span>
+                            <div class="echarts-half" style="width: 50%; height: 100%;">
+                                <EchartsRadar 
+                                :data="learningData.performance.knowledgeRadar"
+                                :chartWidth="chartWidth"
+                                :chartHeight="chartHeight"
+                                />
+                            </div>
+                        </div>
+                        <div class="learn-habit item scrollbar-4">
+                            <div class="echarts-half" style="width: 50%; height: 100%;">
+                                <EchartsPie 
+                                :data="learningData.studyHabits.timeDistribution"
+                                :chartWidth="chartWidth"
+                                :chartHeight="chartHeight"
+                                />
+                            </div>
+                            <span></span>
+                            <div class="echarts-half" style="width: 50%; height: 100%;">
+                                <EchartsPie
+                                :data="learningData.studyHabits.taskCompletion"
+                                :chartWidth="chartWidth"
+                                :chartHeight="chartHeight"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+                <div class="ai-analysis" v-show="aiAnalysisShow">
+                    <div class="analysis-header" @click="clickForClose">
+                        
+                    <el-icon ><Close /></el-icon>
+
+                    </div>
+                    <div class="learn-summary">
+            <h3 class="title">学情总结</h3>
+            <div class="summary-container">
+                <!-- 情况分析 -->
+                <div class="summary-item analysis">
+                    <div class="item-header">
+                    <h4>学情分析</h4>
+                    <el-icon><DataAnalysis /></el-icon>
+                    </div>
+                    <div class="item-content">
+                    <p v-for="(item, index) in aiSummary.analysis.content" 
+                        :key="index">
+                        {{ index + 1 }}. {{ item.text }}
+                    </p>
+                    </div>
+                </div>
+
+                <!-- 资源推荐 -->
+                <div class="summary-item resource">
+                    <div class="item-header">
+                    <h4>资源推荐</h4>
+                    <el-icon><Collection /></el-icon>
+                    </div>
+                    <div class="item-content">
+                    <ul class="resource-list">
+                        <li v-for="resource in aiSummary.resources.list" :key="resource.name">
+                        <span class="resource-type">{{ resource.type }}</span>
+                        <span class="resource-name">{{ resource.name }}</span>
+                        <el-button type="primary" link>查看</el-button>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+
+                <!-- 题目推荐 -->
+                <div class="summary-item exercise">
+                    <div class="item-header">
+                    <h4>题目推荐</h4>
+                    <el-icon><Reading /></el-icon>
+                    </div>
+                    <div class="item-content">
+                    <ul class="exercise-list">
+                        <li v-for="exercise in aiSummary.exercises.list" :key="exercise.title">
+                        <span :class="['exercise-difficulty', exercise.difficulty]">
+                            {{ exercise.difficultyText }}
+                        </span>
+                        <span class="exercise-title">{{ exercise.title }}</span>
+                        <el-button type="primary" link>练习</el-button>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="learn-status status">
             <div class="learn-status-main">
-                <h3 class="title">学情分析</h3>
+                <h3 class="title">
+                    学情分析
+                    <div class="summary-analysis-button">
+                        <el-icon><Histogram /></el-icon>
+
+                    </div>
+                </h3>
                 <div class="status-list list scrollbar-6">
                     <div class="learn-behavior item scrollbar-4">
                         <div class="echarts-whole" style="width: 100%; height: 100%;">
@@ -329,6 +467,7 @@ window.addEventListener('resize', () => {
                 </div>
             </div>
         </div>
+        
         <div class="learn-summary">
             <h3 class="title">学情总结</h3>
             <div class="summary-container">
@@ -387,6 +526,68 @@ window.addEventListener('resize', () => {
 </template>
 
 <style lang="scss" scoped>
+@media screen {
+    .tracker-body .learn-status{
+        width: 100%;
+        max-width: 1100px;
+        .learn-status-main{
+        width: 100%;
+    }
+    }
+}
+//新格局样式
+.tracker-body .learn-status{
+    width: 100%;
+    .learn-status-main{
+    }
+    .ai-analysis{
+        position: absolute;
+        bottom: 20px;
+        right: 40px;
+        overflow-y:auto;
+        width: 380px;
+        height: 600px;
+        box-shadow: -5px 1px 11px rgba(0, 0, 0, 0.15);
+        background: url('@/assets/mainBg.png') no-repeat ;
+        .analysis-header{
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 18px;
+            padding: 10px;
+            cursor: pointer;
+
+        }
+        .analysis-header:hover{
+            color:#5e5bff;
+
+        }
+        .summary-item{
+            background-color: #fff;
+        }
+    }
+    .mode-header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    .summary-analysis-button{
+        padding:6px 20px;
+        font-size: 20px;
+        padding: auto;
+        color:#5e5bff;
+        // background-color: #e6f0ff;
+    }
+    
+    .summary-analysis-button:hover{
+        cursor: pointer;
+        background-color: #e6f0ff;
+    }
+    }
+    .ai-analysis .learn-summary{
+        background: url('@/assets/mainBg.png') no-repeat ;
+        overflow: hidden;
+    }
+}
 
 // 标题样式优化
 .title {
@@ -399,17 +600,16 @@ window.addEventListener('resize', () => {
     padding-left: 36px;
     height: 42px;
     line-height: 42px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ebeef5;
 }
 
 
 // 响应式布局优化
 @media screen and (max-width: 1400px) {
-  .learn-status {
+  .status {
     flex-direction: column;
-
+    gap: 10px;
     .learn-status-main,
     .learn-status-aside {
       width: 100%;
@@ -421,7 +621,7 @@ window.addEventListener('resize', () => {
 }
 // 响应式布局优化
 @media screen and (min-width: 1400px) {
-  .learn-status {
+  .status {
     // flex-direction: row;
 
     .learn-status-main{
@@ -430,9 +630,6 @@ window.addEventListener('resize', () => {
     .learn-status-aside {
       width: 40%;
     }
-    // .ai-item{
-    //     height: 100% !important;
-    // }
   }
 }
 
@@ -599,12 +796,11 @@ li{
 .learn-summary{
     padding: 20px;
     background-color: #fff;
-    border-radius: 10px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
     .summary-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(1, 1fr);
         gap: 20px;
         margin-top: 20px;
     }
@@ -737,10 +933,6 @@ li{
         border-radius: 8px;
         padding: 20px;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-
-        .title {
-            margin-bottom: 20px;
-        }
 
         .status-list {
             gap: 20px;
