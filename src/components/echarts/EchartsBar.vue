@@ -1,6 +1,6 @@
 <script setup >
 import * as echarts from 'echarts'
-import { onMounted, ref,  } from 'vue'
+import { onMounted, ref, watchEffect,  } from 'vue'
 import { useTrackerStore } from '@/stores/tracker'
 
 const chartRef = ref(null)
@@ -68,6 +68,15 @@ const props = defineProps({
     data:Object
 })
 
+const trackerStore=useTrackerStore()
+// watchEffect(()=>{
+//     if(trackerStore.isResize){
+//         console.log('store在resize');
+        
+//         chart.resize()
+//         trackerStore.setIsResize(false)
+//     }
+// })
 
 onMounted(() => {
   const chart = echarts.init(chartRef.value)

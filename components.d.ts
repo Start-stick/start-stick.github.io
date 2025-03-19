@@ -55,6 +55,7 @@ declare module 'vue' {
     Loading_box: typeof import('./src/components/loading/loading_box.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SimpleLoadingBox: typeof import('./src/components/loading/simple-loadingBox.vue')['default']
     TinyEditor: typeof import('./src/components/TinyEditor.vue')['default']
   }
   export interface ComponentCustomProperties {

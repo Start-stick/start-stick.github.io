@@ -4,10 +4,13 @@ import { ref } from 'vue'
 import EchartsBar from '@/components/echarts/EchartsBar.vue'
 import EchartsPie from '@/components/echarts/EchartsPie.vue'
 import EchartsRadar from '@/components/echarts/EchartsRadar.vue'
-import { DataAnalysis, Collection, Reading, Refresh,Histogram,Close } from '@element-plus/icons-vue'
+import { DataAnalysis, Collection, Reading, Refresh,Histogram } from '@element-plus/icons-vue'
 import { learningData,aiSummary } from './AiEcharts.js'
 import { useRouter } from 'vue-router'
 import { useTrackerStore } from '@/stores/tracker'
+
+// import loading_box from '@/components/loading/loading_box.vue'
+import simpleLoadingBox from '@/components/loading/simple-loadingBox.vue'
 
 console.log(learningData);
 
@@ -131,19 +134,23 @@ window.addEventListener('resize', () => {
     
     trackerStore.setIsResize(true)
     console.log('窗口大小变化');
+    console.log(trackerStore.isResize);
+    
     
 })
 
 //新结构功能区
-const aiAnalysisShow=ref(false)
+const aiAnalysisShow=ref(true)
+//左侧盒子
+const aiAnalysisRef=ref(null)
+const aiAnalysisStage=ref(-1)
+//加载动画状态
+const progressStage=ref(1)
 const clickForShow=()=>{
-    aiAnalysisShow.value=!aiAnalysisShow.value
-    console.log(aiAnalysisShow);
-    
-}
+    // aiAnalysisShow.value=!aiAnalysisShow.value
+    aiAnalysisStage.value=1
+    // aiAnalysisRef.value.style.setProperty('--translateX','translateX(0px)')
 
-const clickForClose=()=>{
-    aiAnalysisShow.value=!aiAnalysisShow.value
     
 }
 </script>
@@ -240,66 +247,176 @@ const clickForClose=()=>{
 
                     
                 </div>
-                <div class="ai-analysis" v-show="aiAnalysisShow">
-                    <div class="analysis-header" @click="clickForClose">
-                        
-                    <el-icon ><Close /></el-icon>
+                <div class="ai-analysis" ref="aiAnalysisRef">
+                    <div class="progress" v-show="aiAnalysisStage===-1">
+                        <simpleLoadingBox
+                        :stage="progressStage"
+                        />
+                    </div>
+                    <div class="null" v-show="aiAnalysisStage===0">
+                        <div class="empty__image">
 
+                        </div>
+                        <span class="description">暂未内容生成</span>
                     </div>
-                    <div class="learn-summary">
-            <h3 class="title">学情总结</h3>
-            <div class="summary-container">
-                <!-- 情况分析 -->
-                <div class="summary-item analysis">
-                    <div class="item-header">
-                    <h4>学情分析</h4>
-                    <el-icon><DataAnalysis /></el-icon>
+                    <div class="learn-status-aside" v-show="aiAnalysisStage===1">
+                <h3 class="title">
+                    智能分析
+                    <button class="button">刷新</button>
+                </h3>
+                <div class="ai-list list scrollbar-6">
+                    <!-- 学习行为分析 -->
+                    <div class="ai-behavior ai-item item">
+                        <div class="ai-header">
+                            <div class="ai-title">
+                                <el-icon><DataAnalysis /></el-icon>
+                                <span>学习行为分析</span>
+                            </div>
+                            <el-tag size="small" type="success">良好</el-tag>
+                        </div>
+                        <div class="ai-content">
+                            <p class="summary">{{ aiAnalysis.behavior.summary }}</p>
+                            <div class="analysis-section">
+                                <h5>学习优势</h5>
+                                <ul>
+                                <li v-for="(item, index) in aiAnalysis.behavior.strengths" 
+                                    :key="'strength-'+index">
+                                    {{ item }}
+                                </li>
+                                </ul>
+                            </div>
+                            <div class="analysis-section">
+                                <h5>改进建议</h5>
+                                <ul>
+                                    <li v-for="(item, index) in aiAnalysis.behavior.suggestions" 
+                                        :key="'suggestion-'+index">
+                                        {{ item }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <div class="item-content">
-                    <p v-for="(item, index) in aiSummary.analysis.content" 
-                        :key="index">
-                        {{ index + 1 }}. {{ item.text }}
-                    </p>
-                    </div>
-                </div>
 
-                <!-- 资源推荐 -->
-                <div class="summary-item resource">
-                    <div class="item-header">
-                    <h4>资源推荐</h4>
-                    <el-icon><Collection /></el-icon>
+                    <!-- 学业表现分析 -->
+                    <div class="ai-grade ai-item item">
+                        <div class="ai-header">
+                        <div class="ai-title">
+                            <el-icon><Reading /></el-icon>
+                            <span>学业表现分析</span>
+                        </div>
+                        <el-tag size="small" type="warning">需加强</el-tag>
+                        </div>
+                        <div class="ai-content">
+                        <p class="summary">{{ aiAnalysis.performance.summary }}</p>
+                        <div class="analysis-section">
+                            <h5>掌握情况</h5>
+                            <ul>
+                            <li v-for="(item, index) in aiAnalysis.performance.strengths" 
+                                :key="'mastery-'+index">
+                                {{ item }}
+                            </li>
+                            </ul>
+                        </div>
+                        <div class="analysis-section">
+                            <h5>薄弱知识点</h5>
+                            <ul>
+                            <li v-for="(item, index) in aiAnalysis.performance.weakPoints" 
+                                :key="'weak-'+index"
+                                class="weak-point">
+                                {{ item }}
+                            </li>
+                            </ul>
+                        </div>
+                        </div>
                     </div>
-                    <div class="item-content">
-                    <ul class="resource-list">
-                        <li v-for="resource in aiSummary.resources.list" :key="resource.name">
-                        <span class="resource-type">{{ resource.type }}</span>
-                        <span class="resource-name">{{ resource.name }}</span>
-                        <el-button type="primary" link>查看</el-button>
-                        </li>
-                    </ul>
-                    </div>
-                </div>
 
-                <!-- 题目推荐 -->
-                <div class="summary-item exercise">
-                    <div class="item-header">
-                    <h4>题目推荐</h4>
-                    <el-icon><Reading /></el-icon>
-                    </div>
-                    <div class="item-content">
-                    <ul class="exercise-list">
-                        <li v-for="exercise in aiSummary.exercises.list" :key="exercise.title">
-                        <span :class="['exercise-difficulty', exercise.difficulty]">
-                            {{ exercise.difficultyText }}
-                        </span>
-                        <span class="exercise-title">{{ exercise.title }}</span>
-                        <el-button type="primary" link>练习</el-button>
-                        </li>
-                    </ul>
+                    <!-- 学习习惯分析 -->
+                    <div class="ai-habit ai-item item">
+                        <div class="ai-header">
+                        <div class="ai-title">
+                            <el-icon><Collection /></el-icon>
+                            <span>学习习惯分析</span>
+                        </div>
+                        <el-tag size="small" type="info">待改进</el-tag>
+                        </div>
+                        <div class="ai-content">
+                        <p class="summary">{{ aiAnalysis.habits.summary }}</p>
+                        <div class="analysis-section">
+                            <h5>良好习惯</h5>
+                            <ul>
+                            <li v-for="(item, index) in aiAnalysis.habits.goodHabits" 
+                                :key="'habit-'+index">
+                                {{ item }}
+                            </li>
+                            </ul>
+                        </div>
+                        <div class="analysis-section">
+                            <h5>建议改进</h5>
+                            <ul>
+                            <li v-for="(item, index) in aiAnalysis.habits.improvements" 
+                                :key="'improvement-'+index">
+                                {{ item }}
+                            </li>
+                            </ul>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+                    <div class="learn-summary" v-show="aiAnalysisStage===2">
+                        <h3 class="title">智能分析/学情总结</h3>
+                        <div class="summary-container">
+                            <!-- 情况分析 -->
+                            <div class="summary-item analysis">
+                                <div class="item-header">
+                                <h4>学情分析</h4>
+                                <el-icon><DataAnalysis /></el-icon>
+                                </div>
+                                <div class="item-content">
+                                <p v-for="(item, index) in aiSummary.analysis.content" 
+                                    :key="index">
+                                    {{ index + 1 }}. {{ item.text }}
+                                </p>
+                                </div>
+                            </div>
+
+                            <!-- 资源推荐 -->
+                            <div class="summary-item resource">
+                                <div class="item-header">
+                                <h4>资源推荐</h4>
+                                <el-icon><Collection /></el-icon>
+                                </div>
+                                <div class="item-content">
+                                <ul class="resource-list">
+                                    <li v-for="resource in aiSummary.resources.list" :key="resource.name">
+                                    <span class="resource-type">{{ resource.type }}</span>
+                                    <span class="resource-name">{{ resource.name }}</span>
+                                    <el-button type="primary" link>查看</el-button>
+                                    </li>
+                                </ul>
+                                </div>
+                            </div>
+
+                            <!-- 题目推荐 -->
+                            <div class="summary-item exercise">
+                                <div class="item-header">
+                                <h4>题目推荐</h4>
+                                <el-icon><Reading /></el-icon>
+                                </div>
+                                <div class="item-content">
+                                <ul class="exercise-list">
+                                    <li v-for="exercise in aiSummary.exercises.list" :key="exercise.title">
+                                    <span :class="['exercise-difficulty', exercise.difficulty]">
+                                        {{ exercise.difficultyText }}
+                                    </span>
+                                    <span class="exercise-title">{{ exercise.title }}</span>
+                                    <el-button type="primary" link>练习</el-button>
+                                    </li>
+                                </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -526,12 +643,41 @@ const clickForClose=()=>{
 </template>
 
 <style lang="scss" scoped>
+.progress{
+    margin-top: 60px;
+}
+
+.null{
+    margin-top: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    .empty__image{
+        width: 200px;
+        height:200px;
+        background: url('@/assets/null.png') no-repeat center center;
+        background-size: 300px;
+
+    }
+    .description{
+        color: #909399;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
 @media screen {
     .tracker-body .learn-status{
+        flex-direction: row;
         width: 100%;
-        max-width: 1100px;
+        // max-width: 1460px;
         .learn-status-main{
         width: 100%;
+    }
+    .ai-analysis{
+        width: 30%;
     }
     }
 }
@@ -539,31 +685,17 @@ const clickForClose=()=>{
 .tracker-body .learn-status{
     width: 100%;
     .learn-status-main{
+        flex:7;
     }
     .ai-analysis{
-        position: absolute;
-        bottom: 20px;
-        right: 40px;
-        overflow-y:auto;
-        width: 380px;
-        height: 600px;
-        box-shadow: -5px 1px 11px rgba(0, 0, 0, 0.15);
+        flex:3;
         background: url('@/assets/mainBg.png') no-repeat ;
-        .analysis-header{
-            position: absolute;
-            top: 0;
-            right: 0;
-            font-size: 18px;
-            padding: 10px;
-            cursor: pointer;
-
-        }
-        .analysis-header:hover{
-            color:#5e5bff;
-
-        }
-        .summary-item{
-            background-color: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        .learn-summary,.learn-status-aside {
+            background: url('@/assets/mainBg.png') no-repeat ;
+            .summary-item{
+                background-color: #fff;
+            }
         }
     }
     .mode-header{
@@ -582,10 +714,6 @@ const clickForClose=()=>{
         cursor: pointer;
         background-color: #e6f0ff;
     }
-    }
-    .ai-analysis .learn-summary{
-        background: url('@/assets/mainBg.png') no-repeat ;
-        overflow: hidden;
     }
 }
 
@@ -648,7 +776,6 @@ const clickForClose=()=>{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid #e4e7ed;
 
@@ -787,8 +914,8 @@ li{
     background-size: cover;
     flex-direction: column;
     width: 100%;
-    // min-width: 1040px;
-    min-width: 830px;
+    min-width: 1040px;
+    // min-width: 830px;
     gap: 20px;
     padding: 20px;
 }
@@ -796,7 +923,7 @@ li{
 .learn-summary{
     padding: 20px;
     background-color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
 
     .summary-container {
         display: grid;

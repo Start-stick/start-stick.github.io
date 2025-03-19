@@ -24,20 +24,9 @@ const stage=ref(Number(props.stage))
 <template>
     <!-- 加载动画 -->
     <div class="loading-box" >
-        <div class="loading-stage">
-          <span class="stage-item" :class="{ done: stage >= 1 }">检索词分析</span>
-          <!-- <div class="progress-container">
-+           <div class="progress-bar" :style="{ '--progress': stage >= 1 ? '100%' : '0%' }"></div>
-+         </div> -->
-        </div>
-        <div class="loading_container">
-          <div class="loading_progress " ref="stage01" id="stage_01" style="--progress: 80%; transition-duration: 0.5s; transition-timing-function: cubic-bezier(0, 0, 0, 0);">
-
-          </div>
-        </div>
         
         <div class="loading-stage">
-          <span class="stage-item search" :class="{ done: stage >= 2 }">智能提取搜索</span>
+          <span class="stage-item search" :class="{ done: stage >= 2 }">智能分析</span>
         </div>
 
         <div class="loading_container">
@@ -55,13 +44,13 @@ const stage=ref(Number(props.stage))
 <style lang="scss" scoped>
 // 加载样式
 .loading-box{
-    width: 900px;
-    // width: 100%;
+    // width: 900px;
+    width: 100%;
     height: 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  // justify-content: center;
+  justify-content: center;
   gap: 7px;
   color:#CCD8E7;
   .loading_container{
