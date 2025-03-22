@@ -15,7 +15,7 @@ const searchTabs = [
   { name: '图书', type: 'book' },
   { name: '互联网资源', type: 'internet' }
 ]
-const stage=ref(2)
+const stage=ref(3)
 onMounted(()=>{
 
   document.querySelector('#stage_01').style.setProperty('--progress','100%')

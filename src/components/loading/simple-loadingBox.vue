@@ -1,24 +1,21 @@
 <script setup>
+import { useTrackerStore } from '@/stores/tracker';
+import { progressProps } from 'element-plus';
 import { defineProps, onMounted, ref, watchEffect } from 'vue';
 
 const props=defineProps({
-    stage:{
-        type:Number,
-        required:true
-    }
+  index:{
+    type:String,
+  }
 })
-const stage=ref(Number(props.stage))
-// onMounted(()=>{
+const tracker=useTrackerStore()
+console.log(tracker.stage[Number(props.index)]);
+const stage=ref(Number(tracker.stage[Number(props.index)]))
+watchEffect(()=>{
+  stage.value=tracker.stage[Number(props.index)]
 
-//     console.log(props.stage);
-//     document.querySelector('#stage_01').style.setProperty('--progress','100%')
-//     document.querySelector('#stage_02').style.setProperty('--progress','0%')
-//     // document.querySelector('#stage_02').style.setProperty('--progress',props.progress2)
-// })
-// watchEffect(()=>{
-//     document.querySelector('#stage_01').style.setProperty('--progress',props.progress1)
-//     document.querySelector('#stage_02').style.setProperty('--progress',props.progress2)
-// })
+})
+
 </script>
 
 <template>
@@ -30,7 +27,7 @@ const stage=ref(Number(props.stage))
         </div>
 
         <div class="loading_container">
-          <div class="loading_progress" ref="stage02" id="stage_02" style="--progress: 20%; transition-duration: 0.5s; transition-timing-function: cubic-bezier(0, 0, 0, 0);">
+          <div class="loading_progress" ref="stage02" id="stage_02" style="--progress: 0%; transition-duration: 0.5s; transition-timing-function: cubic-bezier(0, 0, 0, 0);">
 
           </div>
         </div>
