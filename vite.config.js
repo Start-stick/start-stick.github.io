@@ -26,7 +26,7 @@ export default defineConfig({
     },
   },
 
-  base: '/start-stick.github.io/',// 仓库名称
+  // base: '/start-stick.github.io/',// 仓库名称
   // server: {
   //   port: 8080,
   //   host: true,
