@@ -10,8 +10,8 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // base: './',
-  base: '/start-stick.github.io/',// 仓库名称
+  base: './',
+  // base: '/start-stick.github.io/',// 仓库名称
   plugins: [
     vue(),
     vueDevTools(),

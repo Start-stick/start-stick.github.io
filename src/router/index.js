@@ -3,6 +3,7 @@ import Layout from '@/views/layout/index.vue'
 import MyClass from '@/views/class/myclass.vue'
 
 const router = createRouter({
+  // mode:'history',
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {path: '/', redirect:'/login',name:'/'},
