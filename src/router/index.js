@@ -5,7 +5,7 @@ import MyClass from '@/views/class/myclass.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {path: '/', redirect:'/login'},
+    {path: '/', redirect:'/login',name:'/'},
     {
       path: '/login',
       component: () => import('@/views/login/LoginPage.vue')
