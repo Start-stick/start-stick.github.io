@@ -1,6 +1,7 @@
 import '@/assets/main.scss'
 import '@/style/base.css'
 import '@/style/common.css'
+import '@/style/button.css'
 import '@/utils/elemtntui.js'
 
 import { createApp } from 'vue'

@@ -20,7 +20,7 @@ const router = createRouter({
         { path: '/layout/teachplan', component: () => import('@/views/ai/AiTeachPlan/index.vue') },
         { path: '/layout/teachplan/generate', component: () => import('@/views/ai/AiTeachPlan/AiTeachPlan.vue') },
         { path: '/layout/resource', component: () => import('@/views/ai/AiResource.vue') },
-        { path: '/layout/question', component: () => import('@/views/ai/AiQuestion.vue') },
+        { path: '/layout/question', component: () => import('@/views/ai/Question/AiQuestion.vue') },
         { path: '/layout/learntrack', component: () => import('@/views/ai/AiLearnTracker.vue') },
         { path: '/layout/onetap', component: () => import('@/views/ai/AiOneTap.vue') },
         { path: '/layout/classdetail', component: () => import('@/views/class/ClassDetail.vue') },
@@ -28,6 +28,11 @@ const router = createRouter({
     },
     { path: '/classbegin', component: () => import('@/views/class/ClassBegin.vue') },
     { path: '/edit', component: () => import('@/views/ai/AiTeachPlan/editPage.vue') },
+    // 习题集
+    { path: '/questionlist/:listId?', component: () => import('@/views/ai/Question/QuestionList.vue') },
+    { path: '/view-question', component: () => import('@/views/ai/Question/ViewQuestion.vue') },
+    { path: '/edit-question', component: () => import('@/views/ai/Question/EditQuestion.vue') },
+    
   ],
 })
 

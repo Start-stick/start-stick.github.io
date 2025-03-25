@@ -1,0 +1,49 @@
+.button {
+    padding:4px 8px !important;
+    font-size: 14px;
+    color: #fff;
+    border-radius: 6px;
+    background-color: #5e5bff;
+    border: none;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        box-shadow: 0 4px 12px rgba(78, 110, 242, 0.2);
+    }
+}
+
+.base-icon-button{
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 15px;
+    font-size: 14px;
+    height: 14px;
+    box-sizing: content-box;
+    border: 0.5px solid #0d64f1;
+    border-radius: 5px;
+    cursor: pointer;
+
+    .el-icon{
+        margin-right: 6px;
+        height: 1em;
+        line-height: 1em;
+    }
+}
+
+.disabled-button{
+    border: 0.5px solid #d6d8de;
+    cursor: text;
+    
+}
+
+.able-button{
+    background-color: #fff;
+    border: 0.5px solid #0d64f1;
+    color:#0d64f1;
+    cursor: pointer;
+
+    &:hover{
+        background-color: #e6f0ff;
+    }
+    
+}

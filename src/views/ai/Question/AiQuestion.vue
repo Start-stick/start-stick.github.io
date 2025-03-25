@@ -2,14 +2,10 @@
 import { Plus, MoreFilled, Document, Delete, Edit, MagicStick,Clock } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router'
 
-// 弹框
-const dialogVisible = ref(false)
-// 表单数据
-const formData = ref({
-  subject: '',
-  teachingGoal: '',    // 教学目标
-})
+
+
 // 习题集列表数据
 const questionSets = ref([
   {
@@ -49,6 +45,27 @@ const handleDelete = (item) => {
     questionSets.value = questionSets.value.filter(set => set.id !== item.id)
   }).catch(() => {})
 }
+
+//创建点击事件
+const router=useRouter()
+const clickForInterList=()=>{
+    const id=Date.now();
+    
+    const routeData = router.resolve({
+        path: `/questionlist/${id}`,
+        query: { from: 'create' } // 可选：添加额外查询参数
+    })
+    window.open(routeData.href,'_blank')
+    // router.push('/questionlist')
+}
+//跳转导历史题集
+const openDetailNewTab=(id)=>{
+    const routeData = router.resolve({
+        path: `/questionlist/${id}`,
+        query: { from: 'list' } // 可选：添加额外查询参数
+    })
+  window.open(routeData.href, '_blank', 'noopener,noreferrer')
+}
 </script>
 
 <template>
@@ -58,45 +75,10 @@ const handleDelete = (item) => {
                 <el-icon class="icon"><Document /></el-icon>
                 <h2>习题通</h2>
             </div>
-            <el-button type="primary" @click="dialogVisible = true">
+            <el-button type="primary" @click="clickForInterList">
                 <el-icon><MagicStick /></el-icon>
                 <span>创建</span>
             </el-button>
-            <!-- 弹框 -->
-            <el-dialog 
-            v-model="dialogVisible" 
-            class="dialog-box"
-            :modal="false">
-            <div class="left">
-                <!-- 创建习题集 -->
-                <div class="create-question-set">
-                    <h3>智能创建习题集</h3>
-                    <p>请描述您对习题集的期望：</p>
-                    <el-form 
-                    :model="formData" 
-                    label-position="top" 
-                    class="generate-form"
-                    >
-                        <el-form-item label="学科">
-                        <el-input v-model="formData.subject" placeholder="请输入学科" />
-                        </el-form-item>
-
-                        <el-form-item label="教学目标">
-                        <el-input v-model="formData.teachingGoal" type="textarea" class="textarea-input" :rows="3" placeholder="请输入本节课的教学目标" />
-                        </el-form-item>
-
-                    </el-form>
-                    
-                </div>
-                <div class="create-question-set-footer">
-                    <el-button type="primary" @click="handleGenerate">
-                        <el-icon><MagicStick /></el-icon>
-                        生成
-                    </el-button>
-                </div>
-            </div>
-            <div class="right"></div>
-            </el-dialog>
 
         </div>
         <!-- 近期习题集 -->
@@ -113,6 +95,7 @@ const handleDelete = (item) => {
                     v-for="item in questionSets" 
                     :key="item.id" 
                     class="recent-item"
+                    @click="openDetailNewTab(item.id)"
                 >
                     <div class="recent-item-title">
                         <span class="title-text">{{ item.title }}</span>
@@ -159,82 +142,7 @@ const handleDelete = (item) => {
 
 <style lang="scss" scoped>
 
-//弹框样式
-:deep(.el-dialog) {
-    display: flex;
-    margin: 40px;
-    padding: 0;
-    width:  calc(100vw - 80px)  !important;
-    height:  calc(var(--vh, 100vh) - 80px) !important;
-    border-radius: 12px;
-    .el-dialog__body{
-        flex:1;
-        display: grid;
-        grid-template-columns:repeat(2, minmax(0px, 1fr));
-        .left {
-            padding: 24px;
-            width: 100%;
-            height: 100%;
-            flex:1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            // background-color: pink;
-            .create-question-set{
-                display: flex;
-                flex-direction: column;
-                gap: 24px;
 
-                .generate-form{
-                    display: flex;
-                    flex-direction: column;
-                    padding: 24px ;
-                    width: 100%;
-                    height: 100%;
-                    gap: 8px;
-                    border-radius: 8px;
-                    border: 1px solid #4e6ef2;
-                    background-color: #f0f2ff;
-                }
-                .textarea-input .el-textarea__inner{
-                    resize: none;
-                    height: 180px;
-                }
-            }
-            .create-question-set-footer{
-                display: flex;
-                justify-content: flex-end;
-                .el-button{
-                    width: auto;
-                    padding: 20px;
-                    border-radius: 8px;
-                    background-color: #5e5bff;
-                    color: #fff;
-                    .el-icon{
-                        font-size: 20px;
-                        margin-right: 4px;
-                    }
-                }
-            }
-            
-        }
-        .right {
-            flex:1;
-            padding: 24px;
-            width: 100%;
-            height: 100%;
-            background-color: palegreen;
-        }
-    }
-    .el-dialog__header {
-        display: none;
-    }
-    
-    .el-dialog__body {
-        padding: 0;
-    }
-
-}
 
 .ai-question {
     display: flex;

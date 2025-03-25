@@ -3,8 +3,8 @@ import { defineProps, onMounted, ref, watchEffect } from 'vue';
 
 const props=defineProps({
     stage:{
-        type:Number,
-        required:true
+        type:String,
+        // required:true
     }
 })
 const stage=ref(Number(props.stage))
