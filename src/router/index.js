@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '@/views/layout/index.vue'
-import MyClass from '@/views/class/myclass.vue'
+import MyClass from '@/views/class/MyClass.vue'
 
 const router = createRouter({
   // mode:'history',
-  history: createWebHistory(import.meta.env.BASE_URL),
+  // history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL), // 修改后
   routes: [
     {path: '/', redirect:'/login',name:'/'},
     {

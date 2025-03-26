@@ -11,7 +11,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   // base: '/start-stick.github.io/',// 仓库名称
   plugins: [
     vue(),
