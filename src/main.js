@@ -1,4 +1,4 @@
-import '@/assets/main.scss'
+// import '@/assets/main.scss'
 import '@/style/base.css'
 import '@/style/common.css'
 import '@/style/button.css'
